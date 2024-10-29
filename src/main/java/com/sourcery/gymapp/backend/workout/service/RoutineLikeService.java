@@ -18,18 +18,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RoutineLikeService {
 
-    RoutineRepository routineRepository;
-    RoutineLikeRepository routineLikeRepository;
+    private final RoutineRepository routineRepository;
+    private final RoutineLikeRepository routineLikeRepository;
 
-    RoutineLikeMapper routineLikeMapper;
-    WorkoutCurrentUserService currentUserService;
+    private final RoutineLikeMapper routineLikeMapper;
+    private final WorkoutCurrentUserService currentUserService;
 
     public ResponseRoutineLikeDto createRoutineLike(UUID routineId) {
 
         UUID currentUserId = currentUserService.getCurrentUserId();
-        Routine routine = routineRepository.findById(routineId).orElseThrow(()-> new RoutineNotFoundException(routineId));
+        System.out.println("currentUserId: %s".formatted(currentUserId));
+//        Routine routine = routineRepository.findById(routineId).orElseThrow(()-> new RoutineNotFoundException(routineId));
 
-        RoutineLike routineLike = routineLikeMapper.createEntity(currentUserId, routine);
+        RoutineLike routineLike = routineLikeMapper.createEntity(currentUserId, routineId);
 
         routineLikeRepository.save(routineLike);
 

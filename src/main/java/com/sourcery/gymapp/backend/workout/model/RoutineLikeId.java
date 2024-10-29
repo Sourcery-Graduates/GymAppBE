@@ -1,6 +1,8 @@
 package com.sourcery.gymapp.backend.workout.model;
 
 import java.io.Serializable;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RoutineLikeId implements Serializable {
 
+    @Column(name = "user_id")
     private UUID userId;
+
+    @Column(name = "routine_id")
     private UUID routineId;
 
     @Override
