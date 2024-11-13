@@ -16,13 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,20 +34,24 @@ public class RoutineExerciseServiceTest {
 
     @Mock
     private ExerciseService exerciseService;
+
     @Mock
     private RoutineExerciseRepository routineExerciseRepository;
+
     @Mock
     private RoutineExerciseMapper routineExerciseMapper;
+
     @Mock
     private RoutineMapper routineMapper;
+
+    @Mock
+    private RoutineLikeService routineLikeService; // Add RoutineLikeService mock
 
     @InjectMocks
     private RoutineExerciseService routineExerciseService;
 
-
     private Routine routine;
     private Exercise exercise;
-    private ExerciseSimpleDto exerciseSimpleDto;
     private ResponseRoutineDto responseRoutineDto;
     private CreateRoutineExerciseDto createRoutineExerciseDto;
     private List<CreateRoutineExerciseDto> createRoutineExerciseListDto;
@@ -55,18 +59,21 @@ public class RoutineExerciseServiceTest {
     private Map<UUID, Exercise> exerciseMap;
     private List<RoutineExercise> routineExercises;
     private UUID routineId;
+    private long likesCount;
 
     @BeforeEach
     void setup() {
         routine = RoutineFactory.createRoutine();
         routineId = routine.getId();
+        likesCount = 100L;
 
         responseRoutineDto = RoutineFactory.createResponseRoutineDto(
                 routine.getId(),
                 routine.getName(),
                 routine.getDescription(),
                 routine.getCreatedAt(),
-                routine.getUserId()
+                routine.getUserId(),
+                likesCount
         );
 
         createRoutineExerciseDto = ExerciseFactory.createRoutineExerciseDto();
@@ -76,7 +83,8 @@ public class RoutineExerciseServiceTest {
         exercise.setId(createRoutineExerciseDto.exerciseId());
         exerciseMap = Map.of(createRoutineExerciseDto.exerciseId(), exercise);
 
-        exerciseSimpleDto = ExerciseFactory.createExerciseSimpleDto(exercise.getId(), exercise.getName());
+        ExerciseSimpleDto exerciseSimpleDto =
+                ExerciseFactory.createExerciseSimpleDto(exercise.getId(), exercise.getName());
 
         RoutineExercise routineExercise = ExerciseFactory.createRoutineExercise(routine, exercise);
         routineExercises = List.of(routineExercise);
@@ -94,7 +102,9 @@ public class RoutineExerciseServiceTest {
                 .thenReturn(routineExercises.getFirst());
         when(routineExerciseMapper.toResponseRoutineExerciseDto(any(RoutineExercise.class)))
                 .thenReturn(responseRoutineExerciseDto);
-        when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+        when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+        when(routineLikeService.getRoutineLikes(routineId))
+                .thenReturn(new ResponseLikeCountDto(routineId, likesCount));
 
         // Act
         ResponseRoutineDetailDto result = routineExerciseService
@@ -108,6 +118,7 @@ public class RoutineExerciseServiceTest {
                 () -> assertEquals(routine.getName(), result.routine().name()),
                 () -> assertEquals(routine.getDescription(), result.routine().description()),
                 () -> assertEquals(routine.getCreatedAt(), result.routine().createdAt()),
+                () -> assertEquals(likesCount, result.routine().likesCount()),
                 () -> assertEquals(1, result.exercises().size()),
                 () -> assertEquals(responseRoutineExerciseDto, result.exercises().getFirst())
         );
@@ -120,7 +131,9 @@ public class RoutineExerciseServiceTest {
         when(routineExerciseRepository.findAllByRoutineId(routineId)).thenReturn(routineExercises);
         when(routineExerciseMapper.toResponseRoutineExerciseDto(any(RoutineExercise.class)))
                 .thenReturn(responseRoutineExerciseDto);
-        when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+        when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+        when(routineLikeService.getRoutineLikes(routineId))
+                .thenReturn(new ResponseLikeCountDto(routineId, likesCount));
 
         // Act
         ResponseRoutineDetailDto result = routineExerciseService.getRoutineDetails(routineId);
@@ -132,6 +145,7 @@ public class RoutineExerciseServiceTest {
                 () -> assertEquals(routine.getName(), result.routine().name()),
                 () -> assertEquals(routine.getDescription(), result.routine().description()),
                 () -> assertEquals(routine.getCreatedAt(), result.routine().createdAt()),
+                () -> assertEquals(likesCount, result.routine().likesCount()),
                 () -> assertEquals(1, result.exercises().size()),
                 () -> assertEquals(responseRoutineExerciseDto, result.exercises().getFirst())
         );
@@ -142,7 +156,9 @@ public class RoutineExerciseServiceTest {
         // Arrange
         when(routineService.findRoutineById(routineId)).thenReturn(routine);
         when(routineExerciseRepository.findAllByRoutineId(routineId)).thenReturn(List.of());
-        when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+        when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+        when(routineLikeService.getRoutineLikes(routineId))
+                .thenReturn(new ResponseLikeCountDto(routineId, likesCount));
 
         // Act
         ResponseRoutineDetailDto result = routineExerciseService.getRoutineDetails(routineId);
@@ -153,6 +169,7 @@ public class RoutineExerciseServiceTest {
                 () -> assertEquals(routine.getName(), result.routine().name()),
                 () -> assertEquals(routine.getDescription(), result.routine().description()),
                 () -> assertEquals(routine.getCreatedAt(), result.routine().createdAt()),
+                () -> assertEquals(likesCount, result.routine().likesCount()),
                 () -> assertTrue(result.exercises().isEmpty())
         );
     }

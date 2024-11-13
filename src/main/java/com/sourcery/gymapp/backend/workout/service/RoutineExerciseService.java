@@ -23,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RoutineExerciseService {
     private final RoutineService routineService;
+    private final RoutineLikeService routineLikeService;
     private final ExerciseService exerciseService;
     private final RoutineExerciseRepository routineExerciseRepository;
     private final RoutineExerciseMapper routineExerciseMapper;
@@ -72,7 +73,8 @@ public class RoutineExerciseService {
                 .map(routineExerciseMapper::toResponseRoutineExerciseDto)
                 .toList();
 
-        ResponseRoutineDto routineDto = routineMapper.toDto(routine);
+        long likeCount = routineLikeService.getRoutineLikes(routine.getId()).likeCount();
+        ResponseRoutineDto routineDto = routineMapper.toDto(routine, likeCount);
 
         return new ResponseRoutineDetailDto(routineDto, routineExercisesDto);
     }

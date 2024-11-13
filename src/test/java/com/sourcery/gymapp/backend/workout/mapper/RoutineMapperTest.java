@@ -1,10 +1,8 @@
 package com.sourcery.gymapp.backend.workout.mapper;
 
-
 import com.sourcery.gymapp.backend.workout.factory.RoutineFactory;
 import com.sourcery.gymapp.backend.workout.dto.CreateRoutineDto;
 import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineDto;
-import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,13 +34,15 @@ public class RoutineMapperTest {
 
     @Test
     void shouldMapRoutineToResponseRoutineDto() {
-        ResponseRoutineDto responseRoutineDto = routineMapper.toDto(routine);
+        long likesCount = 5L;
+        ResponseRoutineDto responseRoutineDto = routineMapper.toDto(routine, likesCount);
 
         assertAll(
                 () -> assertEquals(routine.getId(), responseRoutineDto.id()),
                 () -> assertEquals(routine.getName(), responseRoutineDto.name()),
                 () -> assertEquals(routine.getDescription(), responseRoutineDto.description()),
-                () -> assertEquals(routine.getCreatedAt(), responseRoutineDto.createdAt())
+                () -> assertEquals(routine.getCreatedAt(), responseRoutineDto.createdAt()),
+                () -> assertEquals(likesCount, responseRoutineDto.likesCount())
         );
     }
 

@@ -1,5 +1,6 @@
 package com.sourcery.gymapp.backend.workout.service;
 
+import com.sourcery.gymapp.backend.workout.dto.ResponseLikeCountDto;
 import com.sourcery.gymapp.backend.workout.exception.UserNotAuthorizedException;
 import com.sourcery.gymapp.backend.workout.factory.RoutineFactory;
 import com.sourcery.gymapp.backend.workout.dto.CreateRoutineDto;
@@ -39,6 +40,9 @@ public class RoutineServiceTest {
     @Mock
     private WorkoutCurrentUserService currentUserService;
 
+    @Mock
+    private RoutineLikeService routineLikeService;
+
     @InjectMocks
     private RoutineService routineService;
 
@@ -47,6 +51,8 @@ public class RoutineServiceTest {
     private Routine routine;
     private CreateRoutineDto createRoutineDto;
     private ResponseRoutineDto responseRoutineDto;
+    private ResponseLikeCountDto responseLikeCountDto;
+    private long likesCount;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +61,8 @@ public class RoutineServiceTest {
         userId = routine.getUserId();
         createRoutineDto = RoutineFactory.createRoutineDto();
         responseRoutineDto = RoutineFactory.createResponseRoutineDto();
+        likesCount = 0L;
+        responseLikeCountDto = new ResponseLikeCountDto(routineId, likesCount);
     }
 
 
@@ -69,7 +77,8 @@ public class RoutineServiceTest {
 
             when(routineMapper.toEntity(createRoutineDto, userId)).thenReturn(routine);
             when(routineRepository.save(routine)).thenReturn(routine);
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+            when(routineLikeService.getRoutineLikes(routineId)).thenReturn(responseLikeCountDto);
 
             // Act
             ResponseRoutineDto result = routineService.createRoutine(createRoutineDto);
@@ -98,7 +107,8 @@ public class RoutineServiceTest {
         void shouldGetRoutineByIdSuccessfully() {
             // Arrange
             when(routineRepository.findById(routineId)).thenReturn(Optional.of(routine));
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+            when(routineLikeService.getRoutineLikes(routineId)).thenReturn(responseLikeCountDto);
 
             // Act
             ResponseRoutineDto result = routineService.getRoutineById(routineId);
@@ -123,7 +133,7 @@ public class RoutineServiceTest {
             List<Routine> routines = List.of(routine);
             when(currentUserService.getCurrentUserId()).thenReturn(userId);
             when(routineRepository.findByUserId(userId)).thenReturn(routines);
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
             when(currentUserService.getCurrentUserId()).thenReturn(userId);
 
             // Act
@@ -167,9 +177,9 @@ public class RoutineServiceTest {
 
             when(routineRepository.findAll(pageable)).thenReturn(mockPage);
 
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
-            when(routineMapper.toDto(routine2)).thenReturn(responseRoutineDto2);
-            when(routineMapper.toDto(routine3)).thenReturn(responseRoutineDto3);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine2, likesCount)).thenReturn(responseRoutineDto2);
+            when(routineMapper.toDto(routine3, likesCount)).thenReturn(responseRoutineDto3);
 
             // Act
             RoutinePageDto result = routineService.searchRoutines("", pageable);
@@ -209,7 +219,7 @@ public class RoutineServiceTest {
             List<ResponseRoutineDto> responseRoutinesDto = List.of(responseRoutineDto);
 
             when(routineRepository.findByNameIgnoreCaseContaining(searchName, pageable)).thenReturn(mockFilteredPage);
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
 
             // Act
             RoutinePageDto result = routineService.searchRoutines(searchName, pageable);
@@ -234,7 +244,8 @@ public class RoutineServiceTest {
             when(routineRepository.findById(routineId)).thenReturn(Optional.of(routine));
             doNothing().when(routineMapper).updateEntity(routine, createRoutineDto);
             when(routineRepository.save(routine)).thenReturn(routine);
-            when(routineMapper.toDto(routine)).thenReturn(responseRoutineDto);
+            when(routineMapper.toDto(routine, likesCount)).thenReturn(responseRoutineDto);
+            when(routineLikeService.getRoutineLikes(routineId)).thenReturn(responseLikeCountDto);
 
             // Act
             ResponseRoutineDto result = routineService.updateRoutine(routineId, createRoutineDto);
