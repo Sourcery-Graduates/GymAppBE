@@ -4,6 +4,10 @@ import com.sourcery.gymapp.backend.workout.dto.ResponseLikeCountDto;
 import com.sourcery.gymapp.backend.workout.exception.UserNotFoundException;
 import com.sourcery.gymapp.backend.workout.model.RoutineLike;
 import com.sourcery.gymapp.backend.workout.repository.RoutineLikeRepository;
+import com.sourcery.gymapp.backend.workout.repository.projection.RoutineLikeCountProjection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +57,15 @@ public class RoutineLikeService {
     public ResponseLikeCountDto getRoutineLikes(UUID routineId) {
         long likeCount = routineLikeRepository.countByRoutineId(routineId);
         return new ResponseLikeCountDto(routineId, likeCount);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<UUID, Long> getLikesCountsForRoutines(List<UUID> routineIds) {
+        return routineLikeRepository.findLikesCountsByRoutineIds(routineIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        RoutineLikeCountProjection::getRoutineId,
+                        RoutineLikeCountProjection::getLikeCount
+                ));
     }
 }

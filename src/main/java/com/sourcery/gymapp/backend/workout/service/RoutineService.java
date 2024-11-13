@@ -9,6 +9,8 @@ import com.sourcery.gymapp.backend.workout.exception.UserNotFoundException;
 import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.RoutineRepository;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ public class RoutineService {
     private final RoutineRepository routineRepository;
     private final RoutineMapper routineMapper;
     private final WorkoutCurrentUserService currentUserService;
+    private final RoutineLikeService routineLikeService;
 
     @Transactional
     public ResponseRoutineDto createRoutine(CreateRoutineDto routineDto) {
@@ -32,27 +35,52 @@ public class RoutineService {
             throw new UserNotFoundException();
         }
         Routine routine = routineMapper.toEntity(routineDto, currentUserId);
-
         routineRepository.save(routine);
-
-        return routineMapper.toDto(routine);
+        long likesCount = routineLikeService.getRoutineLikes(routine.getId()).likeCount();
+        return routineMapper.toDto(routine, likesCount);
     }
-
 
     public ResponseRoutineDto getRoutineById(UUID routineId) {
         Routine routine = findRoutineById(routineId);
-
-        return routineMapper.toDto(routine);
+        long likesCount = routineLikeService.getRoutineLikes(routineId).likeCount();
+        return routineMapper.toDto(routine, likesCount);
     }
 
     public List<ResponseRoutineDto> getRoutinesByUserId() {
         UUID currentUserId = currentUserService.getCurrentUserId();
-
         List<Routine> routines = routineRepository.findByUserId(currentUserId);
 
+        Map<UUID, Long> likesCounts = getLikeCountsMapForRoutines(routines);
+
+        return getResponseRoutineDtoList(routines, likesCounts);
+    }
+
+    public RoutinePageDto searchRoutines(String name, Pageable pageable) {
+        Page<Routine> routinePage = (name == null || name.isBlank())
+                ? getAllRoutines(pageable)
+                : routineRepository.findByNameIgnoreCaseContaining(name, pageable);
+
+        List<Routine> routines = routinePage.getContent();
+
+        Map<UUID, Long> likesCounts = getLikeCountsMapForRoutines(routines);
+
+        List<ResponseRoutineDto> routineDtos = getResponseRoutineDtoList(routines, likesCounts);
+
+        return new RoutinePageDto(routinePage.getTotalPages(), routinePage.getTotalElements(), routineDtos);
+    }
+
+    private List<ResponseRoutineDto> getResponseRoutineDtoList(List<Routine> routines,
+                                                Map<UUID, Long> likesCounts) {
         return routines.stream()
-                .map(routineMapper::toDto)
-                .toList();
+                .map(routine -> routineMapper.toDto(routine,
+                        likesCounts.getOrDefault(routine.getId(), 0L)))
+                .collect(Collectors.toList());
+    }
+
+    private Map<UUID, Long> getLikeCountsMapForRoutines(List<Routine> routines) {
+        return routineLikeService.getLikesCountsForRoutines(
+                routines.stream().map(Routine::getId).collect(Collectors.toList())
+        );
     }
 
     @Transactional
@@ -66,7 +94,8 @@ public class RoutineService {
 
         routineRepository.save(routine);
 
-        return routineMapper.toDto(routine);
+        long likesCount = routineLikeService.getRoutineLikes(routineId).likeCount();
+        return routineMapper.toDto(routine, likesCount);
     }
 
     @Transactional
@@ -82,24 +111,6 @@ public class RoutineService {
     public Routine findRoutineById(UUID id) {
 
         return routineRepository.findById(id).orElseThrow(() -> new RoutineNotFoundException(id));
-    }
-
-    public RoutinePageDto searchRoutines(String name, Pageable pageable) {
-        Page<Routine> routinePage;
-
-        if (name == null || name.isBlank()) {
-            routinePage = getAllRoutines(pageable);
-        } else {
-            routinePage = routineRepository.findByNameIgnoreCaseContaining(name, pageable);
-        }
-
-        List<ResponseRoutineDto> routines = routinePage.map(routineMapper::toDto).getContent();
-
-        return new RoutinePageDto(
-                routinePage.getTotalPages(),
-                routinePage.getTotalElements(),
-                routines
-        );
     }
 
     private Page<Routine> getAllRoutines(Pageable pageable) {
