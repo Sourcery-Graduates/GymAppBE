@@ -1,12 +1,10 @@
 package com.sourcery.gymapp.backend.workout.controller;
 
-import com.sourcery.gymapp.backend.workout.dto.ResponseLikeCountDto;
 import com.sourcery.gymapp.backend.workout.service.RoutineLikeService;
 import lombok.RequiredArgsConstructor;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +28,5 @@ public class RoutineLikeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unlikeRoutine(@PathVariable UUID routineId) {
         routineLikeService.removeLikeFromRoutine(routineId);
-    }
-
-    @GetMapping("/{routineId}/count")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseLikeCountDto getRoutineLikes(@PathVariable UUID routineId) {
-        return routineLikeService.getRoutineLikes(routineId);
     }
 }
