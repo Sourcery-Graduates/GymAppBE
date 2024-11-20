@@ -8,6 +8,7 @@ spring:
   config:
     activate:
       on-profile: local
+    import: classpath:application-secrets.yaml
 
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_app_db
@@ -52,6 +53,14 @@ spring:
   liquibase:
     enabled: false
 
+---
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:private/keystore.p12
+    key-store-password: ${secrets.ssl.key-store-password}
+    key-store-type: PKCS12
 ---
 jwt:
   public-key: |

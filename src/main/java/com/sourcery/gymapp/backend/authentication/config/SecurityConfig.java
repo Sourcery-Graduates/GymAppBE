@@ -41,6 +41,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated()
                 )
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresSecure()
+                )
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(daoAuthenticationProvider())
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -64,6 +67,9 @@ public class SecurityConfig {
                                 "api/auth/register"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresSecure()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder))
