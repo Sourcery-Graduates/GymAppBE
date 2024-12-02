@@ -8,6 +8,14 @@ spring:
   config:
     activate:
       on-profile: local
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health
+    health:
+      enabled: true
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_app_db
