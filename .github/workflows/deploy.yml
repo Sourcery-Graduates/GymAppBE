@@ -37,8 +37,8 @@ jobs:
       # Step 3: Test connectivity
       - name: Test IPv6 Connectivity
         run: |
-          ping6 -c 4 ${{ secrets.AWS_IPV6 }}
-          nc -zv -6 ${{ secrets.AWS_IPV6 }} 22
+          ping6 -c 4 ${{ secrets.AWS_HOST }}
+          nc -zv -6 ${{ secrets.AWS_HOST }} 22
 
       # Step 4: Check if github supports ipv 6
       - name: Check IPv6 Support
