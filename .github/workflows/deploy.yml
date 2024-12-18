@@ -53,8 +53,8 @@ jobs:
           host: ${{ secrets.AWS_HOST }}
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_SSH_KEY }}
-          source: "./home/ec2-user/be/docker-compose.yaml"
-          target: "./home/ec2-user/be/"
+          source: "docker-compose-deployment.yaml"
+          target: "/home/ec2-user/be/"
 
       - name: Restart Docker Containers on EC2
         uses: appleboy/ssh-action@v1.0.0
