@@ -3,6 +3,7 @@ package com.sourcery.gymapp.backend.workout.repository;
 import com.sourcery.gymapp.backend.workout.model.Workout;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
@@ -16,4 +17,12 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
 
     List<Workout> findByUserIdAndDateBetween(UUID userId, ZonedDateTime startDate,
                                              ZonedDateTime endDate, Sort sort);
+
+    @Query(
+            "SELECT COUNT(w) " +
+                    "FROM Workout w " +
+                    "WHERE (w.date BETWEEN :startOfTheMonthDate AND :currentDate) " +
+                    "AND (w.userId = :currentUserId)"
+    )
+    int countWorkoutsByUserIdAndDateBetween(UUID currentUserId, ZonedDateTime currentDate, ZonedDateTime startOfTheMonthDate);
 }

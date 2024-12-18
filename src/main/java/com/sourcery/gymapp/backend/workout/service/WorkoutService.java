@@ -65,7 +65,7 @@ public class WorkoutService {
     @ValidateOrderNumbersInCreateWorkoutDto
     public ResponseWorkoutDto updateWorkout(CreateWorkoutDto updateWorkoutDto, UUID workoutId) {
         var workout = findWorkoutById(workoutId);
-        var currentUserId = currentUserService.getCurrentUserId();
+        UUID currentUserId = getCurrentUserId();
 
         AuthorizationUtil.checkIsUserAuthorized(currentUserId, workout.getUserId());
 
@@ -84,10 +84,7 @@ public class WorkoutService {
     }
 
     public List<ResponseWorkoutDto> getWorkoutsByUserId() {
-        var currentUserId = currentUserService.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new UserNotFoundException();
-        }
+        UUID currentUserId = getCurrentUserId();
 
         List<Workout> workouts = workoutRepository.findByUserId(currentUserId,
                 Sort.by(Sort.Order.asc("date"), Sort.Order.asc("name")));
@@ -100,7 +97,7 @@ public class WorkoutService {
     @Transactional
     public void deleteWorkout(UUID workoutId) {
         var workout = findWorkoutById(workoutId);
-        var currentUserId = currentUserService.getCurrentUserId();
+        UUID currentUserId = getCurrentUserId();
 
         AuthorizationUtil.checkIsUserAuthorized(currentUserId, workout.getUserId());
 
@@ -151,5 +148,23 @@ public class WorkoutService {
         workout.setName(dto.name());
         workout.setDate(dto.date());
         workout.setComment(dto.comment());
+    }
+
+    public int getWorkoutCount() {
+        UUID currentUserId = getCurrentUserId();
+
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        ZonedDateTime startOfTheCurrentMonth = currentDate.withDayOfMonth(1).withHour(0);
+
+        return workoutRepository
+                .countWorkoutsByUserIdAndDateBetween(currentUserId, currentDate, startOfTheCurrentMonth);
+    }
+
+    private UUID getCurrentUserId() {
+        UUID currentUserId = currentUserService.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new UserNotFoundException();
+        }
+        return currentUserId;
     }
 }
