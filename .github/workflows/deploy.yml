@@ -53,7 +53,7 @@ jobs:
           host: ${{ secrets.AWS_HOST }}
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_SSH_KEY }}
-          source: "/home/ec2-user/be/docker-compose.yml"
+          source: "/home/ec2-user/be/docker-compose.yaml"
           target: "/home/ec2-user/be/${{ secrets.AWS_USER }}/"
 
       - name: Restart Docker Containers on EC2
