@@ -3,7 +3,7 @@ name: Deploy Workflow
 on:
   push:
     branches:
-      - "feature/GYM-136-BE-Automate-deployment-to-AWS" # For testing purposes
+      - "feature/GYM-136-BE-Automate-deployment-to-AWS" # For testing purpose
   pull_request:
     types:
       - closed
@@ -21,7 +21,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || 
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || 
       (github.event_name == 'push' && github.ref == 'refs/heads/feature/GYM-136-BE-Automate-deployment-to-AWS')
-  # for testing purposes
+  # for testing purpose
 
     steps: # Step 1: Checkout code
       - name: Checkout code
