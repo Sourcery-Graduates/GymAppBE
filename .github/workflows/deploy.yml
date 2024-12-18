@@ -1,17 +1,28 @@
-name: Deploy to AWS EC2
+name: Deploy Workflow
 
 on:
   push:
     branches:
-      - "main"
       - "feature/GYM-136-BE-Automate-deployment-to-AWS"
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+  workflow_run:
+    workflows: [ "Test Workflow" ]
+    types:
+      - completed
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
-    steps:
-      # Step 1: Checkout code
+
+    steps: # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
