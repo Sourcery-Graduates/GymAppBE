@@ -48,7 +48,7 @@ jobs:
 
       # Step 4: Deploy to AWS EC2
       - name: Restart Docker Containers on EC2
-        uses: appleboy/ssh-action@c1.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           protocol: tcp6
           port: 22
