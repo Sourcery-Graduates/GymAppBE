@@ -1,14 +1,6 @@
 name: Deploy Workflow
 
 on:
-  push:
-    branches:
-      - "feature/GYM-136-BE-Automate-deployment-to-AWS" # For testing purpose
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
   workflow_run:
     workflows: [ "Java CI with Gradle" ]
     types:
@@ -17,11 +9,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || 
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || 
-      (github.event_name == 'push' && github.ref == 'refs/heads/feature/GYM-136-BE-Automate-deployment-to-AWS')
-  # for testing purpose
+    if: (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
 
     steps: # Step 1: Checkout code
       - name: Checkout code
@@ -46,7 +34,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/gymapp-backend-modulith:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/gymapp-backend-modulith:latest
 
-      # Step 4: Run the script to restart docker container
+      # Step 4: Send the POST method to run the script on deployment-server
       - name: Send deployment request
         uses: fjogeleit/http-request-action@v1
         with:
