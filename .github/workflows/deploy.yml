@@ -46,9 +46,9 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/gymapp-backend-modulith:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/gymapp-backend-modulith:latest
 
-      # Step 4: Run the script to restart docker containers
+      # Step 4: Run the script to restart docker containers 123
       - name: Send deployment request
         uses: fjogeleit/http-request-action@v1
         with:
-          url: '${{ secrets.AWS_ELB_IP }}'
+          url: '${{ secrets.AWS_ELB_IP_DEPLOY_URL }}'
           method: 'POST'
