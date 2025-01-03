@@ -61,9 +61,18 @@ public class WorkoutController {
     ) {
         return workoutService.getWorkoutGridGroupByDate(startDate,endDate);
     }
+
     @GetMapping("/count")
     @ResponseStatus(HttpStatus.OK)
-    public int getWorkoutCount() {
-        return workoutService.getWorkoutCount();
+    public int getWorkoutCount(
+            @RequestParam(required = false) Integer minusMonth
+    ) {
+        return workoutService.getWorkoutCount(minusMonth);
+    }
+
+    @GetMapping("/totalWeight")
+    @ResponseStatus(HttpStatus.OK)
+    public int getTotalWeight(@RequestParam(required = false) Integer minusMonth) {
+        return workoutService.getTotalWeight(minusMonth);
     }
 }

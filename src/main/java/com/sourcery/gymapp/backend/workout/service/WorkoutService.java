@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.zip.ZipEntry;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +34,7 @@ public class WorkoutService {
     @Transactional
     @ValidateOrderNumbersInCreateWorkoutDto
     public ResponseWorkoutDto createWorkout(CreateWorkoutDto createWorkoutDto) {
-        var currentUserId = currentUserService.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new UserNotFoundException();
-        }
+        UUID currentUserId = getCurrentUserId();
 
         Workout basedOnWorkout = null;
         if (createWorkoutDto.basedOnWorkoutId() != null) {
@@ -106,11 +105,7 @@ public class WorkoutService {
 
     public ResponseWorkoutGridGroupedByDate getWorkoutGridGroupByDate(ZonedDateTime startDate,
                                                                       ZonedDateTime endDate) {
-        UUID currentUserId = currentUserService.getCurrentUserId();
-
-        if (currentUserId == null) {
-            throw new UserNotFoundException();
-        }
+        UUID currentUserId = getCurrentUserId();
 
         HashMap<String, List<ResponseWorkoutDto>> workoutMap = new HashMap<>();
         DateTimeFormatter dateWithoutTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -150,14 +145,41 @@ public class WorkoutService {
         workout.setComment(dto.comment());
     }
 
-    public int getWorkoutCount() {
+    public int getWorkoutCount(Integer month) {
         UUID currentUserId = getCurrentUserId();
-
-        ZonedDateTime currentDate = ZonedDateTime.now();
-        ZonedDateTime startOfTheCurrentMonth = currentDate.withDayOfMonth(1).withHour(0);
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
 
         return workoutRepository
-                .countWorkoutsByUserIdAndDateBetween(currentUserId, currentDate, startOfTheCurrentMonth);
+                .countWorkoutsByUserIdAndDateBetween(currentUserId,
+                        startAndEndOfTheMonth.getFirst(),
+                        startAndEndOfTheMonth.getLast());
+    }
+
+    public int getTotalWeight(Integer month) {
+        UUID currentUserId = getCurrentUserId();
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
+
+        return workoutRepository.
+                getTotalWeightByUserIdAndDateBetween(currentUserId,
+                        startAndEndOfTheMonth.getFirst(),
+                        startAndEndOfTheMonth.getLast());
+    }
+
+    private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {
+
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        ZonedDateTime startOfTheMonth = currentDate.withDayOfMonth(1).withHour(0);
+        ZonedDateTime endOfTheMonth = currentDate;
+
+        if (month != null && month > 0) {
+            startOfTheMonth = currentDate.minusMonths(month)
+                    .with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0);
+
+            endOfTheMonth = currentDate.minusMonths(month)
+                    .with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59);
+        }
+
+        return List.of(startOfTheMonth, endOfTheMonth);
     }
 
     private UUID getCurrentUserId() {

@@ -20,9 +20,26 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
 
     @Query(
             "SELECT COUNT(w) " +
-                    "FROM Workout w " +
-                    "WHERE (w.date BETWEEN :startOfTheMonthDate AND :currentDate) " +
-                    "AND (w.userId = :currentUserId)"
+            "FROM Workout w " +
+            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
+            "AND (w.userId = :currentUserId)"
     )
-    int countWorkoutsByUserIdAndDateBetween(UUID currentUserId, ZonedDateTime currentDate, ZonedDateTime startOfTheMonthDate);
+    int countWorkoutsByUserIdAndDateBetween(UUID currentUserId,
+                                            ZonedDateTime startOfTheMonth,
+                                            ZonedDateTime endOfTheMonth);
+
+    @Query(
+            "SELECT SUM(wes.setNumber * wes.reps * wes.weight) as total_weight, w.userId " +
+            "FROM WorkoutExerciseSet wes " +
+            "LEFT JOIN WorkoutExercise we " +
+            "ON wes.workoutExercise.id = we.id " +
+            "JOIN Workout w " +
+            "ON we.workout.id = w.id " +
+            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
+            "AND w.userId = :currentUserId " +
+            "GROUP BY w.userId"
+    )
+    int getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
+                                              ZonedDateTime startOfTheMonth,
+                                              ZonedDateTime endOfTheMonth);
 }
