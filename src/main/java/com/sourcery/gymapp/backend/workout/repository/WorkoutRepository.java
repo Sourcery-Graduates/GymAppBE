@@ -39,7 +39,7 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "AND w.userId = :currentUserId " +
             "GROUP BY w.userId"
     )
-    int getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
+    Integer getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
                                               ZonedDateTime startOfTheMonth,
                                               ZonedDateTime endOfTheMonth);
 }

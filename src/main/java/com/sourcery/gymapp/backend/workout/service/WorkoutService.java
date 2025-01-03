@@ -19,7 +19,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.zip.ZipEntry;
 
 @Service
 @RequiredArgsConstructor
@@ -150,19 +149,24 @@ public class WorkoutService {
         List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
 
         return workoutRepository
-                .countWorkoutsByUserIdAndDateBetween(currentUserId,
+                .countWorkoutsByUserIdAndDateBetween(
+                        currentUserId,
                         startAndEndOfTheMonth.getFirst(),
-                        startAndEndOfTheMonth.getLast());
+                        startAndEndOfTheMonth.getLast()
+                );
     }
 
     public int getTotalWeight(Integer month) {
         UUID currentUserId = getCurrentUserId();
         List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
 
-        return workoutRepository.
-                getTotalWeightByUserIdAndDateBetween(currentUserId,
-                        startAndEndOfTheMonth.getFirst(),
-                        startAndEndOfTheMonth.getLast());
+        Integer totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
+                currentUserId,
+                startAndEndOfTheMonth.getFirst(),
+                startAndEndOfTheMonth.getLast()
+        );
+
+        return totalWeight != null ? totalWeight : 0;
     }
 
     private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {
@@ -173,10 +177,12 @@ public class WorkoutService {
 
         if (month != null && month > 0) {
             startOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0);
+                    .with(TemporalAdjusters.firstDayOfMonth())
+                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
             endOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59);
+                    .with(TemporalAdjusters.lastDayOfMonth())
+                        .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
         }
 
         return List.of(startOfTheMonth, endOfTheMonth);

@@ -64,7 +64,7 @@ public class WorkoutController {
 
     @GetMapping("/count")
     @ResponseStatus(HttpStatus.OK)
-    public int getWorkoutCount(
+    public Integer getWorkoutCount(
             @RequestParam(required = false) Integer minusMonth
     ) {
         return workoutService.getWorkoutCount(minusMonth);
@@ -72,7 +72,7 @@ public class WorkoutController {
 
     @GetMapping("/totalWeight")
     @ResponseStatus(HttpStatus.OK)
-    public int getTotalWeight(@RequestParam(required = false) Integer minusMonth) {
+    public Integer getTotalWeight(@RequestParam(required = false) Integer minusMonth) {
         return workoutService.getTotalWeight(minusMonth);
     }
 }
