@@ -2,6 +2,7 @@ package com.sourcery.gymapp.backend.workout.service;
 
 import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
+import com.sourcery.gymapp.backend.workout.util.WeightComparisonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +31,13 @@ public class WorkoutStatsService {
         if (totalWorkoutsCurrentMonth == 1) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "workout",
+                    "totalWorkouts",
                     "You have completed " + totalWorkoutsCurrentMonth + " workout this month!"
             ));
         } else {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "workout",
+                    "workoutDifference",
                     "You have completed " + differenceInWorkouts + " more workout than the last month!"
             ));
         }
@@ -44,21 +45,31 @@ public class WorkoutStatsService {
         if (differenceInWorkouts > 1) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "workout",
+                    "workoutDifference",
                     "You have completed " + differenceInWorkouts + " more workouts than the last month!"
             ));
         }
+
         if (totalWeightCurrentMonth > 0) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "weight",
+                    "totalWeight",
                     "You have lifted a total of " + totalWeightCurrentMonth + " kg this month!"
             ));
         }
+
+        if (totalWeightCurrentMonth > 0) {
+            userStats.add(new WorkoutStatsDto(
+                    UUID.randomUUID(),
+                    "totalWeight",
+                    totalWeightCurrentMonth +" kg " + WeightComparisonUtil.getMessageByWeight(totalWeightCurrentMonth)
+            ));
+        }
+
         if (differenceInWeight != 0) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "weight",
+                    "weightDifference",
                     "You have lifted " + differenceInWeight + " kg more than the last month!"
             ));
         }
