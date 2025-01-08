@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -33,7 +32,7 @@ public class WorkoutService {
     @Transactional
     @ValidateOrderNumbersInCreateWorkoutDto
     public ResponseWorkoutDto createWorkout(CreateWorkoutDto createWorkoutDto) {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = currentUserService.getCurrentUserId();
 
         Workout basedOnWorkout = null;
         if (createWorkoutDto.basedOnWorkoutId() != null) {
@@ -63,7 +62,7 @@ public class WorkoutService {
     @ValidateOrderNumbersInCreateWorkoutDto
     public ResponseWorkoutDto updateWorkout(CreateWorkoutDto updateWorkoutDto, UUID workoutId) {
         var workout = findWorkoutById(workoutId);
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = currentUserService.getCurrentUserId();
 
         AuthorizationUtil.checkIsUserAuthorized(currentUserId, workout.getUserId());
 
@@ -82,7 +81,7 @@ public class WorkoutService {
     }
 
     public List<ResponseWorkoutDto> getWorkoutsByUserId() {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = currentUserService.getCurrentUserId();
 
         List<Workout> workouts = workoutRepository.findByUserId(currentUserId,
                 Sort.by(Sort.Order.asc("date"), Sort.Order.asc("name")));
@@ -95,7 +94,7 @@ public class WorkoutService {
     @Transactional
     public void deleteWorkout(UUID workoutId) {
         var workout = findWorkoutById(workoutId);
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = currentUserService.getCurrentUserId();
 
         AuthorizationUtil.checkIsUserAuthorized(currentUserId, workout.getUserId());
 
@@ -104,7 +103,7 @@ public class WorkoutService {
 
     public ResponseWorkoutGridGroupedByDate getWorkoutGridGroupByDate(ZonedDateTime startDate,
                                                                       ZonedDateTime endDate) {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = currentUserService.getCurrentUserId();
 
         HashMap<String, List<ResponseWorkoutDto>> workoutMap = new HashMap<>();
         DateTimeFormatter dateWithoutTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -142,57 +141,5 @@ public class WorkoutService {
         workout.setName(dto.name());
         workout.setDate(dto.date());
         workout.setComment(dto.comment());
-    }
-
-    public int getWorkoutCount(Integer month) {
-        UUID currentUserId = getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
-
-        return workoutRepository
-                .countWorkoutsByUserIdAndDateBetween(
-                        currentUserId,
-                        startAndEndOfTheMonth.getFirst(),
-                        startAndEndOfTheMonth.getLast()
-                );
-    }
-
-    public int getTotalWeight(Integer month) {
-        UUID currentUserId = getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
-
-        Integer totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
-                currentUserId,
-                startAndEndOfTheMonth.getFirst(),
-                startAndEndOfTheMonth.getLast()
-        );
-
-        return totalWeight != null ? totalWeight : 0;
-    }
-
-    private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {
-
-        ZonedDateTime currentDate = ZonedDateTime.now();
-        ZonedDateTime startOfTheMonth = currentDate.withDayOfMonth(1).withHour(0);
-        ZonedDateTime endOfTheMonth = currentDate;
-
-        if (month != null && month > 0) {
-            startOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.firstDayOfMonth())
-                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
-
-            endOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.lastDayOfMonth())
-                        .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-        }
-
-        return List.of(startOfTheMonth, endOfTheMonth);
-    }
-
-    private UUID getCurrentUserId() {
-        UUID currentUserId = currentUserService.getCurrentUserId();
-        if (currentUserId == null) {
-            throw new UserNotFoundException();
-        }
-        return currentUserId;
     }
 }

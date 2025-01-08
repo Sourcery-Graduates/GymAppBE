@@ -33,7 +33,7 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "FROM WorkoutExerciseSet wes " +
             "LEFT JOIN WorkoutExercise we " +
             "ON wes.workoutExercise.id = we.id " +
-            "JOIN Workout w " +
+            "RIGHT JOIN Workout w " +
             "ON we.workout.id = w.id " +
             "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
             "AND w.userId = :currentUserId " +

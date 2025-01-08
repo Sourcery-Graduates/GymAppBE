@@ -3,7 +3,9 @@ package com.sourcery.gymapp.backend.workout.controller;
 import com.sourcery.gymapp.backend.workout.dto.CreateWorkoutDto;
 import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutDto;
 import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutGridGroupedByDate;
+import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
 import com.sourcery.gymapp.backend.workout.service.WorkoutService;
+import com.sourcery.gymapp.backend.workout.service.WorkoutStatsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @RequestMapping("/api/workout/workout")
 public class WorkoutController {
     private final WorkoutService workoutService;
+    private final WorkoutStatsService workoutStatsService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -62,17 +65,8 @@ public class WorkoutController {
         return workoutService.getWorkoutGridGroupByDate(startDate,endDate);
     }
 
-    @GetMapping("/count")
-    @ResponseStatus(HttpStatus.OK)
-    public Integer getWorkoutCount(
-            @RequestParam(required = false) Integer minusMonth
-    ) {
-        return workoutService.getWorkoutCount(minusMonth);
-    }
-
-    @GetMapping("/totalWeight")
-    @ResponseStatus(HttpStatus.OK)
-    public Integer getTotalWeight(@RequestParam(required = false) Integer minusMonth) {
-        return workoutService.getTotalWeight(minusMonth);
+    @GetMapping("/stats")
+    public List<WorkoutStatsDto> getWorkoutStats() {
+        return workoutStatsService.getWorkoutStats();
     }
 }
