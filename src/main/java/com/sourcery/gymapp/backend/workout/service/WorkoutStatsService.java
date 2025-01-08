@@ -37,12 +37,18 @@ public class WorkoutStatsService {
         } else {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
-                    "workoutDifference",
-                    "You have completed " + differenceInWorkouts + " more workout than the last month!"
+                    "totalWorkouts",
+                    "You have completed " + totalWorkoutsCurrentMonth + " workouts this month!"
             ));
         }
 
-        if (differenceInWorkouts > 1) {
+        if (differenceInWorkouts == 1) {
+            userStats.add(new WorkoutStatsDto(
+                    UUID.randomUUID(),
+                    "workoutDifference",
+                    "You have completed " + differenceInWorkouts + " more workout than the last month!"
+            ));
+        } else {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "workoutDifference",
