@@ -40,6 +40,14 @@ public class RoutineExercise extends BaseEntity {
     @Column(nullable = false)
     private Integer defaultRestTime;
 
+    @Column(nullable = false)
+    @Size(max = 16)
+    private String weightUnit;
+
+    @Column(nullable = false)
+    @Size(max = 16)
+    private String restTimeUnit;
+
     @Size(max = 255)
     private String notes;
 }

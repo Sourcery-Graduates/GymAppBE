@@ -23,6 +23,8 @@ public class WorkoutExerciseFactory {
                 exerciseSimpleDto,
                 1,
                 "Test Notes",
+                "kg",
+                "seconds",
                 List.of()
         );
     }
@@ -36,6 +38,8 @@ public class WorkoutExerciseFactory {
                 exerciseId,
                 1,
                 "Test Notes",
+                "kg",
+                "seconds",
                 sets
         );
     }
@@ -49,6 +53,8 @@ public class WorkoutExerciseFactory {
                 UUID.randomUUID(),
                 orderNumber,
                 "Test Notes",
+                "kg",
+                "seconds",
                 sets
         );
     }
@@ -65,6 +71,8 @@ public class WorkoutExerciseFactory {
         workoutExercise.setId(UUID.randomUUID());
         workoutExercise.setOrderNumber(1);
         workoutExercise.setNotes("Test Notes");
+        workoutExercise.setWeightUnit("kg");
+        workoutExercise.setRestTimeUnit("seconds");
         workoutExercise.setExercise(exercise);
 
         return workoutExercise;

@@ -26,6 +26,12 @@ public record CreateRoutineExerciseDto(
         @NotNull
         Integer defaultRestTime,
 
+        @NotNull
+        String weightUnit,
+
+        @NotNull
+        String restTimeUnit,
+
         @Size(max = 1000)
         String notes
 ) {

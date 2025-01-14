@@ -11,6 +11,8 @@ public record ResponseRoutineExerciseDto(
         Integer defaultReps,
         BigDecimal defaultWeight,
         Integer defaultRestTime,
+        String weightUnit,
+        String restTimeUnit,
         String notes
 ) {
 }

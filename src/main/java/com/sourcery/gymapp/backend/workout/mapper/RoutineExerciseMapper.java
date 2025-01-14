@@ -25,6 +25,8 @@ public class RoutineExerciseMapper {
         routineExercise.setDefaultReps(createRoutineExerciseDto.defaultReps());
         routineExercise.setDefaultWeight(createRoutineExerciseDto.defaultWeight());
         routineExercise.setDefaultRestTime(createRoutineExerciseDto.defaultRestTime());
+        routineExercise.setWeightUnit(createRoutineExerciseDto.weightUnit());
+        routineExercise.setRestTimeUnit(createRoutineExerciseDto.restTimeUnit());
         return routineExercise;
     }
 
@@ -36,6 +38,8 @@ public class RoutineExerciseMapper {
                 routineExercise.getDefaultReps(),
                 routineExercise.getDefaultWeight(),
                 routineExercise.getDefaultRestTime(),
+                routineExercise.getWeightUnit(),
+                routineExercise.getRestTimeUnit(),
                 routineExercise.getNotes()
         );
     }
@@ -54,6 +58,8 @@ public class RoutineExerciseMapper {
                 routineExercise.getDefaultReps(),
                 routineExercise.getDefaultWeight(),
                 routineExercise.getDefaultRestTime(),
+                routineExercise.getWeightUnit(),
+                routineExercise.getRestTimeUnit(),
                 routineExercise.getNotes()
         );
     }

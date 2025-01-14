@@ -31,6 +31,8 @@ public class WorkoutExerciseMapper {
                 exerciseSimpleDto,
                 workoutExercise.getOrderNumber(),
                 workoutExercise.getNotes(),
+                workoutExercise.getWeightUnit(),
+                workoutExercise.getRestTimeUnit(),
                 responseWorkoutExerciseSetDtos
         );
     }
@@ -43,6 +45,8 @@ public class WorkoutExerciseMapper {
         var workoutExercise = new WorkoutExercise();
         workoutExercise.setId(createWorkoutExerciseDto.id());
         workoutExercise.setOrderNumber(createWorkoutExerciseDto.orderNumber());
+        workoutExercise.setWeightUnit(createWorkoutExerciseDto.weightUnit());
+        workoutExercise.setRestTimeUnit(createWorkoutExerciseDto.restTimeUnit());
         workoutExercise.setNotes(createWorkoutExerciseDto.notes());
         workoutExercise.setExercise(exercise);
         workoutExercise.setWorkout(workout);

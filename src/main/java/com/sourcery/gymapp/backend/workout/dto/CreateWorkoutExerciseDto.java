@@ -19,6 +19,12 @@ public record CreateWorkoutExerciseDto(
         @NotNull
         Integer orderNumber,
 
+        @NotNull
+        String weightUnit,
+
+        @NotNull
+        String restTimeUnit,
+
         @Size(max = 255)
         String notes,
 

@@ -104,6 +104,8 @@ public class ExerciseFactory {
         routineExercise.setDefaultReps(10);
         routineExercise.setDefaultWeight(BigDecimal.valueOf(50.0));
         routineExercise.setDefaultRestTime(60);
+        routineExercise.setWeightUnit("kg");
+        routineExercise.setRestTimeUnit("seconds");
         routineExercise.setNotes("Test notes");
 
         return routineExercise;
@@ -117,6 +119,8 @@ public class ExerciseFactory {
                 10,
                 BigDecimal.valueOf(50.0),
                 60,
+                "kg",
+                "seconds",
                 "Test notes"
         );
     }
@@ -132,6 +136,8 @@ public class ExerciseFactory {
                 10,
                 BigDecimal.valueOf(50.0),
                 60,
+                "kg",
+                "seconds",
                 "Test notes"
         );
     }

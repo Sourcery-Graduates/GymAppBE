@@ -8,6 +8,8 @@ public record ResponseWorkoutExerciseDto(
         ExerciseSimpleDto exercise,
         Integer orderNumber,
         String notes,
+        String weightUnit,
+        String restTimeUnit,
         List<ResponseWorkoutExerciseSetDto> sets
 ) {
 }

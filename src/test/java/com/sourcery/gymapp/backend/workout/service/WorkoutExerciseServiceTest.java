@@ -71,7 +71,13 @@ public class WorkoutExerciseServiceTest {
     void shouldUpdateWorkoutExercisesSuccessfully() {
         Exercise newExercise = ExerciseFactory.createExercise();
         CreateWorkoutExerciseDto updateWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                createWorkoutExerciseDto.id(), newExercise.getId(), 2, "New Notes", null
+                createWorkoutExerciseDto.id(),
+                newExercise.getId(),
+                2,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(
                 null,
@@ -101,7 +107,13 @@ public class WorkoutExerciseServiceTest {
         Exercise newExercise = ExerciseFactory.createExercise();
         WorkoutExercise newWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(newExercise);
         CreateWorkoutExerciseDto newWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                newWorkoutExercise.getId(), newExercise.getId(), 2, "New Notes", null
+                newWorkoutExercise.getId(),
+                newExercise.getId(),
+                2,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
 
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(
@@ -129,7 +141,13 @@ public class WorkoutExerciseServiceTest {
         WorkoutExercise newWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(newExercise);
         newWorkoutExercise.setId(null);
         CreateWorkoutExerciseDto newWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                null, newExercise.getId(), 2, "New Notes", null
+                null,
+                newExercise.getId(),
+                2,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
 
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(
@@ -155,7 +173,13 @@ public class WorkoutExerciseServiceTest {
     void shouldAddNewWorkoutExercisesSuccessfully_WhenProvidedTheSameExercise() {
         WorkoutExercise newWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(existingWorkoutExercise.getExercise());
         CreateWorkoutExerciseDto newWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                newWorkoutExercise.getId(), existingWorkoutExercise.getExercise().getId(), 2, "New Notes", null
+                newWorkoutExercise.getId(),
+                existingWorkoutExercise.getExercise().getId(),
+                2,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
 
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(
@@ -198,7 +222,13 @@ public class WorkoutExerciseServiceTest {
         Exercise newExercise = ExerciseFactory.createExercise();
         WorkoutExercise newWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(newExercise);
         CreateWorkoutExerciseDto newWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                newWorkoutExercise.getId(), newExercise.getId(), 2, "New Notes", null
+                newWorkoutExercise.getId(),
+                newExercise.getId(),
+                2,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
 
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(
@@ -224,12 +254,24 @@ public class WorkoutExerciseServiceTest {
         Exercise updateExercise = ExerciseFactory.createExercise();
         WorkoutExercise updateWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(updateExercise);
         CreateWorkoutExerciseDto updateWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                createWorkoutExerciseDto.id(), updateExercise.getId(), 2, "Updated Notes", null
+                createWorkoutExerciseDto.id(),
+                updateExercise.getId(),
+                2,
+                "kg",
+                "seconds",
+                "Updated Notes",
+                null
         );
         Exercise newExercise = ExerciseFactory.createExercise();
         WorkoutExercise newWorkoutExercise = WorkoutExerciseFactory.createWorkoutExercise(newExercise);
         CreateWorkoutExerciseDto newWorkoutExerciseDto = new CreateWorkoutExerciseDto(
-                newWorkoutExercise.getId(), newExercise.getId(), 3, "New Notes", null
+                newWorkoutExercise.getId(),
+                newExercise.getId(),
+                3,
+                "kg",
+                "seconds",
+                "New Notes",
+                null
         );
 
         updateWorkoutDto = WorkoutFactory.createCreateWorkoutDto(

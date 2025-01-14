@@ -31,6 +31,14 @@ public class WorkoutExercise extends BaseEntity {
     @Column(nullable = false)
     private Integer orderNumber;
 
+    @Column(nullable = false)
+    @Size(max = 16)
+    private String weightUnit;
+
+    @Column(nullable = false)
+    @Size(max = 16)
+    private String restTimeUnit;
+
     @Size(max = 255)
     private String notes;
 
