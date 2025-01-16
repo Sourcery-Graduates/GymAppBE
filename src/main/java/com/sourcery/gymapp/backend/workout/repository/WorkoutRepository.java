@@ -1,5 +1,6 @@
 package com.sourcery.gymapp.backend.workout.repository;
 
+import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.model.Workout;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,16 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
     Integer getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
                                               ZonedDateTime startOfTheMonth,
                                               ZonedDateTime endOfTheMonth);
+
+    @Query(
+            "SELECT r as routine " +
+            "FROM Workout w " +
+            "LEFT JOIN Routine r " +
+            "ON w.routine.id = r.id " +
+            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
+            "AND w.userId = :currentUserId " +
+            "GROUP BY r " +
+            "ORDER BY COUNT(w.id) DESC")
+    List<Routine> getMostUsedRoutinesByUserIdAndDateBetween(
+            UUID currentUserId, ZonedDateTime startOfTheMonth, ZonedDateTime endOfTheMonth);
 }

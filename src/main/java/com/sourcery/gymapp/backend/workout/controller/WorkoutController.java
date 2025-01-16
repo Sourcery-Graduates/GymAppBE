@@ -1,9 +1,6 @@
 package com.sourcery.gymapp.backend.workout.controller;
 
-import com.sourcery.gymapp.backend.workout.dto.CreateWorkoutDto;
-import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutDto;
-import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutGridGroupedByDate;
-import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
+import com.sourcery.gymapp.backend.workout.dto.*;
 import com.sourcery.gymapp.backend.workout.service.WorkoutService;
 import com.sourcery.gymapp.backend.workout.service.WorkoutStatsService;
 import jakarta.validation.Valid;
@@ -68,5 +65,10 @@ public class WorkoutController {
     @GetMapping("/stats")
     public List<WorkoutStatsDto> getWorkoutStats() {
         return workoutStatsService.getWorkoutStats();
+    }
+
+    @GetMapping("/most-used")
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
+        return workoutStatsService.getMostUsedRoutines();
     }
 }

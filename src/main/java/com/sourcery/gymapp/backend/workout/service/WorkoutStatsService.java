@@ -1,6 +1,11 @@
 package com.sourcery.gymapp.backend.workout.service;
 
+import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineDto;
+import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineSimpleDto;
+import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutDto;
 import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
+import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
+import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
 import com.sourcery.gymapp.backend.workout.util.WeightComparisonUtil;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +13,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutStatsService {
     private final WorkoutCurrentUserService workoutCurrentUserService;
+    private final WorkoutService workoutService;
+    private final RoutineService routineService;
     private final WorkoutRepository workoutRepository;
+    private final RoutineMapper routineMapper;
 
     public List<WorkoutStatsDto> getWorkoutStats() {
         int totalWorkoutsCurrentMonth = getWorkoutCount(0);
@@ -25,9 +31,19 @@ public class WorkoutStatsService {
         int totalWeightPreviousMonth = getTotalWeight(1);
         int differenceInWorkouts = totalWorkoutsCurrentMonth - totalWorkoutsPreviousMonth;
         int differenceInWeight = totalWeightCurrentMonth - totalWeightPreviousMonth;
+        boolean isNewUser = checkIfUserIsNew();
 
         List<WorkoutStatsDto> userStats = new ArrayList<>();
 
+        if (isNewUser) {
+            userStats.add(new WorkoutStatsDto(
+                    UUID.randomUUID(),
+                    "user",
+                    "newUser"
+            ));
+
+            return userStats;
+        }
         if (totalWorkoutsCurrentMonth == 1) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
@@ -107,6 +123,19 @@ public class WorkoutStatsService {
         return totalWeight != null ? totalWeight : 0;
     }
 
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
+        UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(3);
+
+        List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
+                currentUserId,
+                startAndEndOfTheMonth.getFirst(),
+                startAndEndOfTheMonth.getLast()
+        );
+
+        return routines.stream().map(routineMapper::toSimpleDto).toList();
+    }
+
     private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {
         ZonedDateTime currentDate = ZonedDateTime.now();
         ZonedDateTime startOfTheMonth = currentDate.withDayOfMonth(1).withHour(0);
@@ -123,5 +152,12 @@ public class WorkoutStatsService {
         }
 
         return List.of(startOfTheMonth, endOfTheMonth);
+    }
+
+    private boolean checkIfUserIsNew() {
+        List<ResponseWorkoutDto> workouts = workoutService.getWorkoutsByUserId();
+        List<ResponseRoutineDto> routines = routineService.getRoutinesByUserId();
+
+        return workouts.isEmpty() && routines.isEmpty();
     }
 }
