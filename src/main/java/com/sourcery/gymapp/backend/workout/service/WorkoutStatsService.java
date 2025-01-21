@@ -125,7 +125,7 @@ public class WorkoutStatsService {
         return routines.stream().map(routineMapper::toSimpleDto).toList();
     }
 
-    public List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween() {
+    public List<MuscleSetDto> getTotalMuscleSetsByUserIdForCurrentWeek() {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
         List<ZonedDateTime> startAndEndOfTheWeek = getCurrentWeek();
 

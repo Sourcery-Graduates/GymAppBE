@@ -29,6 +29,6 @@ public class WorkoutStatsController {
 
     @GetMapping("/muscle-sets")
     public List<MuscleSetDto> getTotalMuscleSets() {
-        return workoutStatsService.getTotalMuscleSetsByUserIdAndDateBetween();
+        return workoutStatsService.getTotalMuscleSetsByUserIdForCurrentWeek();
     }
 }
