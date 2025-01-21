@@ -46,7 +46,7 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
                                               ZonedDateTime endOfTheMonth);
 
     @Query(
-            "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(we.id, wes.setNumber, e.primaryMuscles) " +
+            "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(e.primaryMuscles, SUM(wes.setNumber)) " +
             "FROM Workout as w " +
             "LEFT JOIN FETCH  WorkoutExercise as we " +
             "ON w.id = we.workout.id " +
@@ -55,7 +55,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "LEFT JOIN FETCH  Exercise e " +
             "ON we.exercise.id = e.id " +
             "WHERE (w.userId = :currentUserId) " +
-            "AND (w.date BETWEEN :startOfTheWeek AND :endOfTheWeek)"
+            "AND (w.date BETWEEN :startOfTheWeek AND :endOfTheWeek) " +
+            "GROUP BY e.primaryMuscles"
     )
     List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween(
             UUID currentUserId, ZonedDateTime startOfTheWeek, ZonedDateTime endOfTheWeek);

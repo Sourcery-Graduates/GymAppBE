@@ -11,7 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 public class MuscleSetDto {
-    private UUID workoutExerciseId;
-    private Integer numberOfSets;
     private List<String> primaryMuscles;
+    private Long numberOfSets;
 }
