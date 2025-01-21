@@ -54,9 +54,11 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "ON we.id = wes.workoutExercise.id " +
             "LEFT JOIN FETCH  Exercise e " +
             "ON we.exercise.id = e.id " +
-            "WHERE (w.userId = :currentUserId)"
+            "WHERE (w.userId = :currentUserId) " +
+            "AND (w.date BETWEEN :startOfTheWeek AND :endOfTheWeek)"
     )
-    List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween(UUID currentUserId);
+    List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween(
+            UUID currentUserId, ZonedDateTime startOfTheWeek, ZonedDateTime endOfTheWeek);
 
     @Query(
             "SELECT r as routine " +

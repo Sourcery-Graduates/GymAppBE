@@ -8,6 +8,7 @@ import com.sourcery.gymapp.backend.workout.util.WeightComparisonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -122,7 +123,7 @@ public class WorkoutStatsService {
 
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(0);
+        List<ZonedDateTime> startAndEndOfTheMonth = getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(3);
 
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
                 currentUserId,
@@ -135,19 +136,36 @@ public class WorkoutStatsService {
 
     public List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween() {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
+        List<ZonedDateTime> startAndEndOfTheWeek = getCurrentWeek();
 
-        return workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(currentUserId);
+        return workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(
+                currentUserId,
+                startAndEndOfTheWeek.getFirst(),
+                startAndEndOfTheWeek.getLast()
+        );
+    }
+
+    private List<ZonedDateTime> getCurrentWeek() {
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        ZonedDateTime startOfTheWeek = currentDate
+                .with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
+                .withHour(0).withMinute(59).withSecond(59).withNano(999999999);
+
+        ZonedDateTime endOfTheWeek = startOfTheWeek
+                .plusWeeks(1)
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        return List.of(startOfTheWeek, endOfTheWeek);
     }
 
     private List<ZonedDateTime> getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(Integer month) {
         ZonedDateTime currentDate = ZonedDateTime.now();
-        ZonedDateTime startOfTheMonth;
 
         ZonedDateTime endOfTheMonth = currentDate
             .with(TemporalAdjusters.lastDayOfMonth())
             .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
-        startOfTheMonth = currentDate.minusMonths(month)
+        ZonedDateTime startOfTheMonth = currentDate.minusMonths(month)
             .with(TemporalAdjusters.firstDayOfMonth())
             .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
