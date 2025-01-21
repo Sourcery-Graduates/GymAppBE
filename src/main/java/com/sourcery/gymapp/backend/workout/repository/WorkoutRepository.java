@@ -48,11 +48,11 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
     @Query(
             "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(e.primaryMuscles, SUM(wes.setNumber)) " +
             "FROM Workout as w " +
-            "LEFT JOIN FETCH  WorkoutExercise as we " +
+            "LEFT JOIN WorkoutExercise as we " +
             "ON w.id = we.workout.id " +
-            "LEFT JOIN FETCH  WorkoutExerciseSet as wes " +
+            "LEFT JOIN  WorkoutExerciseSet as wes " +
             "ON we.id = wes.workoutExercise.id " +
-            "LEFT JOIN FETCH  Exercise e " +
+            "LEFT JOIN Exercise e " +
             "ON we.exercise.id = e.id " +
             "WHERE (w.userId = :currentUserId) " +
             "AND (w.date BETWEEN :startOfTheWeek AND :endOfTheWeek) " +
