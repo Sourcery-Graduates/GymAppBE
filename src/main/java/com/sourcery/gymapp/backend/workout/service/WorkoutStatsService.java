@@ -149,7 +149,7 @@ public class WorkoutStatsService {
         ZonedDateTime currentDate = ZonedDateTime.now();
         ZonedDateTime startOfTheWeek = currentDate
                 .with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
-                .withHour(0).withMinute(59).withSecond(59).withNano(999999999);
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);;
 
         ZonedDateTime endOfTheWeek = startOfTheWeek
                 .plusWeeks(1)
@@ -161,12 +161,12 @@ public class WorkoutStatsService {
     private List<ZonedDateTime> getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(Integer month) {
         ZonedDateTime currentDate = ZonedDateTime.now();
 
+        ZonedDateTime startOfTheMonth = currentDate.minusMonths(month)
+                .with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+
         ZonedDateTime endOfTheMonth = currentDate
             .with(TemporalAdjusters.lastDayOfMonth())
-            .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-
-        ZonedDateTime startOfTheMonth = currentDate.minusMonths(month)
-            .with(TemporalAdjusters.firstDayOfMonth())
             .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
         return List.of(startOfTheMonth, endOfTheMonth);
