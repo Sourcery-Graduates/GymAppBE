@@ -42,31 +42,24 @@ public class WorkoutStatsService {
 
             return userStats;
         }
-        if (totalWorkoutsCurrentMonth == 1) {
+
+        if (totalWorkoutsCurrentMonth >= 1) {
+            String isPlural = totalWorkoutsCurrentMonth > 1 ? "s" : "";
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "totalWorkouts",
-                    "You have completed " + totalWorkoutsCurrentMonth + " workout this month!"
-            ));
-        } else if (totalWeightCurrentMonth > 1){
-            userStats.add(new WorkoutStatsDto(
-                    UUID.randomUUID(),
-                    "totalWorkouts",
-                    "You have completed " + totalWorkoutsCurrentMonth + " workouts this month!"
+                    "You have completed %d workout%s this month!"
+                            .formatted(totalWorkoutsCurrentMonth, isPlural)
             ));
         }
 
-        if (differenceInWorkouts == 1) {
+        if (differenceInWorkouts >= 1) {
+            String isPlural = totalWorkoutsCurrentMonth > 1 ? "s" : "";
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "workoutDifference",
-                    "You have completed " + differenceInWorkouts + " more workout than the last month!"
-            ));
-        } else if (differenceInWorkouts > 1) {
-            userStats.add(new WorkoutStatsDto(
-                    UUID.randomUUID(),
-                    "workoutDifference",
-                    "You have completed " + differenceInWorkouts + " more workouts than the last month!"
+                    "You have completed %d more workout%s than the last month!"
+                            .formatted(differenceInWorkouts, isPlural)
             ));
         }
 
@@ -76,9 +69,7 @@ public class WorkoutStatsService {
                     "totalWeight",
                     "You have lifted a total of " + totalWeightCurrentMonth + " kg this month!"
             ));
-        }
 
-        if (totalWeightCurrentMonth > 0) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "totalWeight",
