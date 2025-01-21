@@ -1,9 +1,6 @@
 package com.sourcery.gymapp.backend.workout.service;
 
-import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineDto;
-import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineSimpleDto;
-import com.sourcery.gymapp.backend.workout.dto.ResponseWorkoutDto;
-import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
+import com.sourcery.gymapp.backend.workout.dto.*;
 import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
@@ -50,7 +47,7 @@ public class WorkoutStatsService {
                     "totalWorkouts",
                     "You have completed " + totalWorkoutsCurrentMonth + " workout this month!"
             ));
-        } else {
+        } else if (totalWeightCurrentMonth > 1){
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "totalWorkouts",
@@ -64,7 +61,7 @@ public class WorkoutStatsService {
                     "workoutDifference",
                     "You have completed " + differenceInWorkouts + " more workout than the last month!"
             ));
-        } else {
+        } else if (differenceInWorkouts > 1) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "workoutDifference",
@@ -88,7 +85,7 @@ public class WorkoutStatsService {
             ));
         }
 
-        if (differenceInWeight != 0) {
+        if (differenceInWeight > 0) {
             userStats.add(new WorkoutStatsDto(
                     UUID.randomUUID(),
                     "weightDifference",
@@ -125,7 +122,7 @@ public class WorkoutStatsService {
 
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(3);
+        List<ZonedDateTime> startAndEndOfTheMonth = getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(0);
 
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
                 currentUserId,
@@ -134,6 +131,27 @@ public class WorkoutStatsService {
         );
 
         return routines.stream().map(routineMapper::toSimpleDto).toList();
+    }
+
+    public List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween() {
+        UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
+
+        return workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(currentUserId);
+    }
+
+    private List<ZonedDateTime> getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(Integer month) {
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        ZonedDateTime startOfTheMonth;
+
+        ZonedDateTime endOfTheMonth = currentDate
+            .with(TemporalAdjusters.lastDayOfMonth())
+            .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        startOfTheMonth = currentDate.minusMonths(month)
+            .with(TemporalAdjusters.firstDayOfMonth())
+            .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        return List.of(startOfTheMonth, endOfTheMonth);
     }
 
     private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {

@@ -2,7 +2,6 @@ package com.sourcery.gymapp.backend.workout.controller;
 
 import com.sourcery.gymapp.backend.workout.dto.*;
 import com.sourcery.gymapp.backend.workout.service.WorkoutService;
-import com.sourcery.gymapp.backend.workout.service.WorkoutStatsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +17,6 @@ import java.util.UUID;
 @RequestMapping("/api/workout/workout")
 public class WorkoutController {
     private final WorkoutService workoutService;
-    private final WorkoutStatsService workoutStatsService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -60,15 +58,5 @@ public class WorkoutController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime endDate
     ) {
         return workoutService.getWorkoutGridGroupByDate(startDate,endDate);
-    }
-
-    @GetMapping("/stats")
-    public List<WorkoutStatsDto> getWorkoutStats() {
-        return workoutStatsService.getWorkoutStats();
-    }
-
-    @GetMapping("/most-used")
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
-        return workoutStatsService.getMostUsedRoutines();
     }
 }

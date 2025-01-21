@@ -1,5 +1,6 @@
 package com.sourcery.gymapp.backend.workout.repository;
 
+import com.sourcery.gymapp.backend.workout.dto.MuscleSetDto;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.model.Workout;
 import org.springframework.data.domain.Sort;
@@ -22,8 +23,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
     @Query(
             "SELECT COUNT(w) " +
             "FROM Workout w " +
-            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
-            "AND (w.userId = :currentUserId)"
+            "WHERE (w.userId = :currentUserId) " +
+            "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)"
     )
     int countWorkoutsByUserIdAndDateBetween(UUID currentUserId,
                                             ZonedDateTime startOfTheMonth,
@@ -36,8 +37,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "ON wes.workoutExercise.id = we.id " +
             "RIGHT JOIN Workout w " +
             "ON we.workout.id = w.id " +
-            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
-            "AND w.userId = :currentUserId " +
+            "WHERE (w.userId = :currentUserId) " +
+            "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)" +
             "GROUP BY w.userId"
     )
     Integer getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
@@ -45,12 +46,25 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
                                               ZonedDateTime endOfTheMonth);
 
     @Query(
+            "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(we.id, wes.setNumber, e.primaryMuscles) " +
+            "FROM Workout as w " +
+            "LEFT JOIN FETCH  WorkoutExercise as we " +
+            "ON w.id = we.workout.id " +
+            "LEFT JOIN FETCH  WorkoutExerciseSet as wes " +
+            "ON we.id = wes.workoutExercise.id " +
+            "LEFT JOIN FETCH  Exercise e " +
+            "ON we.exercise.id = e.id " +
+            "WHERE (w.userId = :currentUserId)"
+    )
+    List<MuscleSetDto> getTotalMuscleSetsByUserIdAndDateBetween(UUID currentUserId);
+
+    @Query(
             "SELECT r as routine " +
             "FROM Workout w " +
             "LEFT JOIN Routine r " +
             "ON w.routine.id = r.id " +
-            "WHERE (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth) " +
-            "AND w.userId = :currentUserId " +
+            "WHERE (w.userId = :currentUserId) " +
+            "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)" +
             "GROUP BY r " +
             "ORDER BY COUNT(w.id) DESC")
     List<Routine> getMostUsedRoutinesByUserIdAndDateBetween(
