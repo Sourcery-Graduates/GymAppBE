@@ -113,7 +113,12 @@ public class WorkoutStatsService {
         return totalWeight != null ? totalWeight : 0;
     }
 
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit) {
+        int baseRoutinesLimit = 7;
+        if (routinesLimit != null) {
+            baseRoutinesLimit = routinesLimit;
+        }
+
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
         List<ZonedDateTime> startAndEndOfTheMonth = getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(3);
 
@@ -123,7 +128,10 @@ public class WorkoutStatsService {
                 startAndEndOfTheMonth.getLast()
         );
 
-        return routines.stream().map(routineMapper::toSimpleDto).toList();
+        return routines.stream()
+                .map(routineMapper::toSimpleDto)
+                .limit(baseRoutinesLimit)
+                .toList();
     }
 
     public List<MuscleSetDto> getTotalMuscleSetsByUserIdForCurrentWeek() {

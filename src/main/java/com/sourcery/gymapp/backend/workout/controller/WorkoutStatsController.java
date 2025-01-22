@@ -7,6 +7,7 @@ import com.sourcery.gymapp.backend.workout.service.WorkoutStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class WorkoutStatsController {
     }
 
     @GetMapping("/most-used")
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines() {
-        return workoutStatsService.getMostUsedRoutines();
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(@RequestParam(required = false) Integer routinesLimit) {
+        return workoutStatsService.getMostUsedRoutines(routinesLimit);
     }
 
     @GetMapping("/muscle-sets")
