@@ -33,6 +33,9 @@ public class WorkoutService {
     @ValidateOrderNumbersInCreateWorkoutDto
     public ResponseWorkoutDto createWorkout(CreateWorkoutDto createWorkoutDto) {
         UUID currentUserId = currentUserService.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new UserNotFoundException();
+        }
 
         Workout basedOnWorkout = null;
         if (createWorkoutDto.basedOnWorkoutId() != null) {
@@ -82,6 +85,9 @@ public class WorkoutService {
 
     public List<ResponseWorkoutDto> getWorkoutsByUserId() {
         UUID currentUserId = currentUserService.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new UserNotFoundException();
+        }
 
         List<Workout> workouts = workoutRepository.findByUserId(currentUserId,
                 Sort.by(Sort.Order.asc("date"), Sort.Order.asc("name")));
@@ -104,6 +110,10 @@ public class WorkoutService {
     public ResponseWorkoutGridGroupedByDate getWorkoutGridGroupByDate(ZonedDateTime startDate,
                                                                       ZonedDateTime endDate) {
         UUID currentUserId = currentUserService.getCurrentUserId();
+
+        if (currentUserId == null) {
+            throw new UserNotFoundException();
+        }
 
         HashMap<String, List<ResponseWorkoutDto>> workoutMap = new HashMap<>();
         DateTimeFormatter dateWithoutTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
