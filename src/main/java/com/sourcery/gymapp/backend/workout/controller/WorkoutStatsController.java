@@ -23,6 +23,11 @@ public class WorkoutStatsController {
         return workoutStatsService.getWorkoutStats();
     }
 
+    @GetMapping("/is-user-new")
+    public boolean checkIfUserIsNew() {
+        return workoutStatsService.checkIfUserIsNew();
+    }
+
     @GetMapping("/most-used")
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines(
             @RequestParam Integer routinesLimit,

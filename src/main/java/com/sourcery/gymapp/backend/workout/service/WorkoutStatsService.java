@@ -28,19 +28,8 @@ public class WorkoutStatsService {
         int totalWeightPreviousMonth = getTotalWeight(1);
         int differenceInWorkouts = totalWorkoutsCurrentMonth - totalWorkoutsPreviousMonth;
         int differenceInWeight = totalWeightCurrentMonth - totalWeightPreviousMonth;
-        boolean isNewUser = checkIfUserIsNew();
 
         List<WorkoutStatsDto> userStats = new ArrayList<>();
-
-        if (isNewUser) {
-            userStats.add(new WorkoutStatsDto(
-                    UUID.randomUUID(),
-                    "user",
-                    "newUser"
-            ));
-
-            return userStats;
-        }
 
         if (totalWorkoutsCurrentMonth >= 1) {
             String isPlural = totalWorkoutsCurrentMonth > 1 ? "s" : "";
@@ -143,7 +132,7 @@ public class WorkoutStatsService {
         );
     }
 
-    private boolean checkIfUserIsNew() {
+    public boolean checkIfUserIsNew() {
         List<ResponseWorkoutDto> workouts = workoutService.getWorkoutsByUserId();
         List<ResponseRoutineDto> routines = routineService.getRoutinesByUserId();
 
