@@ -1,7 +1,6 @@
 package com.sourcery.gymapp.backend.workout.service;
 
 import com.sourcery.gymapp.backend.workout.dto.*;
-import com.sourcery.gymapp.backend.workout.exception.UserNotAuthenticatedException;
 import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
@@ -88,9 +87,9 @@ public class WorkoutStatsService {
         return userStats;
     }
 
-    public int getWorkoutCount(Integer month) {
+    public int getWorkoutCount(Integer offsetMonth) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOffsetMonth(offsetMonth);
 
         return workoutRepository
                 .countWorkoutsByUserIdAndDateBetween(
@@ -100,9 +99,9 @@ public class WorkoutStatsService {
                 );
     }
 
-    public int getTotalWeight(Integer month) {
+    public int getTotalWeight(Integer offsetMonth) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOfTheMonthFromCurrentDateMinusMonth(month);
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartAndEndOffsetMonth(offsetMonth);
 
         Integer totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
                 currentUserId,
@@ -113,14 +112,14 @@ public class WorkoutStatsService {
         return totalWeight != null ? totalWeight : 0;
     }
 
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit) {
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit, Integer offsetStartMonth) {
         int baseRoutinesLimit = 7;
         if (routinesLimit != null) {
             baseRoutinesLimit = routinesLimit;
         }
-
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(3);
+
+        List<ZonedDateTime> startAndEndOfTheMonth = getStartOffsetAndEndMonth(offsetStartMonth);
 
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
                 currentUserId,
@@ -134,9 +133,9 @@ public class WorkoutStatsService {
                 .toList();
     }
 
-    public List<MuscleSetDto> getTotalMuscleSetsByUserIdForCurrentWeek() {
+    public List<MuscleSetDto> getTotalMuscleSets(Integer offsetWeek) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheWeek = getCurrentWeek();
+        List<ZonedDateTime> startAndEndOfTheWeek = getWeeklyDateRange(offsetWeek);
 
         return workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(
                 currentUserId,
@@ -145,50 +144,62 @@ public class WorkoutStatsService {
         );
     }
 
-    private List<ZonedDateTime> getCurrentWeek() {
-        ZonedDateTime currentDate = ZonedDateTime.now();
-        ZonedDateTime startOfTheWeek = currentDate
-                .with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
-                .withHour(0).withMinute(0).withSecond(0).withNano(0);;
-
-        ZonedDateTime endOfTheWeek = startOfTheWeek
-                .plusWeeks(1)
-                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-
-        return List.of(startOfTheWeek, endOfTheWeek);
-    }
-
-    private List<ZonedDateTime> getEndOfTheMonthFromCurrentDateAndStartOfTheMonthMinus(Integer month) {
-        ZonedDateTime currentDate = ZonedDateTime.now();
-
-        ZonedDateTime startOfTheMonth = currentDate.minusMonths(month)
-                .with(TemporalAdjusters.firstDayOfMonth())
+    public List<ZonedDateTime> getWeeklyDateRange(Integer offsetWeek) {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime startOfWeek = now.minusWeeks(offsetWeek)
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        ZonedDateTime endOfTheMonth = currentDate
-            .with(TemporalAdjusters.lastDayOfMonth())
-            .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        ZonedDateTime endOfWeek = startOfWeek.plusDays(6)
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        return List.of(startOfWeek, endOfWeek);
+    }
+
+
+    private List<ZonedDateTime> getStartOffsetAndEndMonth(Integer offsetStartMonth) {
+        ZonedDateTime currentDate = ZonedDateTime.now();
+
+        ZonedDateTime startOfTheMonth = getOffsetStartMonthFromCurrentDate(offsetStartMonth, currentDate);
+        ZonedDateTime endOfTheMonth = getEndMonthFromCurrentDate(currentDate);
 
         return List.of(startOfTheMonth, endOfTheMonth);
     }
 
-    private List<ZonedDateTime> getStartAndEndOfTheMonthFromCurrentDateMinusMonth(Integer month) {
+    private List<ZonedDateTime> getStartAndEndOffsetMonth(Integer offsetMonth) {
         ZonedDateTime currentDate = ZonedDateTime.now();
         ZonedDateTime startOfTheMonth = currentDate.withDayOfMonth(1).withHour(0);
         ZonedDateTime endOfTheMonth = currentDate;
 
-        if (month != null && month > 0) {
-            startOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.firstDayOfMonth())
-                    .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        if (offsetMonth != null) {
+            startOfTheMonth = getOffsetStartMonthFromCurrentDate(offsetMonth, currentDate);
 
-            endOfTheMonth = currentDate.minusMonths(month)
-                    .with(TemporalAdjusters.lastDayOfMonth())
-                    .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            endOfTheMonth = getOffsetEndMonthFromCurrentDate(offsetMonth, currentDate);
         }
 
         return List.of(startOfTheMonth, endOfTheMonth);
     }
+
+    private static ZonedDateTime getOffsetStartMonthFromCurrentDate(Integer offsetStartMonth,
+                                                                         ZonedDateTime currentDate) {
+        return currentDate.minusMonths(offsetStartMonth)
+                .with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+    }
+
+    private static ZonedDateTime getOffsetEndMonthFromCurrentDate(Integer offsetEndMonth,
+                                                                       ZonedDateTime currentDate) {
+        return currentDate.minusMonths(offsetEndMonth)
+                .with(TemporalAdjusters.lastDayOfMonth())
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+    }
+
+    private static ZonedDateTime getEndMonthFromCurrentDate(ZonedDateTime currentDate) {
+        return currentDate
+                .with(TemporalAdjusters.lastDayOfMonth())
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+    }
+
 
     private boolean checkIfUserIsNew() {
         List<ResponseWorkoutDto> workouts = workoutService.getWorkoutsByUserId();

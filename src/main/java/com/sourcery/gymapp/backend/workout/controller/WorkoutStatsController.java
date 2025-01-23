@@ -24,12 +24,15 @@ public class WorkoutStatsController {
     }
 
     @GetMapping("/most-used")
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(@RequestParam(required = false) Integer routinesLimit) {
-        return workoutStatsService.getMostUsedRoutines(routinesLimit);
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(
+            @RequestParam Integer routinesLimit,
+            @RequestParam Integer offsetStartMonth) {
+        return workoutStatsService.getMostUsedRoutines(routinesLimit, offsetStartMonth);
     }
 
     @GetMapping("/muscle-sets")
-    public List<MuscleSetDto> getTotalMuscleSets() {
-        return workoutStatsService.getTotalMuscleSetsByUserIdForCurrentWeek();
+    public List<MuscleSetDto> getTotalMuscleSets(
+            @RequestParam Integer offsetWeek) {
+        return workoutStatsService.getTotalMuscleSets(offsetWeek);
     }
 }
