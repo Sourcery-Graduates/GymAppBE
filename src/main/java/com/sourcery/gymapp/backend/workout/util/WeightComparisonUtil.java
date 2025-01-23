@@ -1,8 +1,11 @@
 package com.sourcery.gymapp.backend.workout.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 public class WeightComparisonUtil {
 
     private record WeightRange(int maxWeight, String message) {}
