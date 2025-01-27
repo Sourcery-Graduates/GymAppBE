@@ -22,14 +22,19 @@ public class WorkoutStatsService {
     private final RoutineMapper routineMapper;
 
     public List<WorkoutStatsDto> getWorkoutStats() {
-        int totalWorkoutsCurrentMonth = getWorkoutCount(0);
-        int totalWorkoutsPreviousMonth = getWorkoutCount(1);
-        int totalWeightCurrentMonth = getTotalWeight(0);
-        int totalWeightPreviousMonth = getTotalWeight(1);
-        int differenceInWorkouts = totalWorkoutsCurrentMonth - totalWorkoutsPreviousMonth;
-        int differenceInWeight = totalWeightCurrentMonth - totalWeightPreviousMonth;
-
+        UUID userId = workoutCurrentUserService.getCurrentUserId();
         List<WorkoutStatsDto> userStats = new ArrayList<>();
+
+        addWorkoutStats(userStats, userId);
+        addWeightStats(userStats, userId);
+
+        return userStats;
+    }
+
+    private void addWorkoutStats(List<WorkoutStatsDto> userStats, UUID currentUserId) {
+        int totalWorkoutsCurrentMonth = getWorkoutCount(currentUserId, 0);
+        int totalWorkoutsPreviousMonth = getWorkoutCount(currentUserId, 1);
+        int differenceInWorkouts = totalWorkoutsCurrentMonth - totalWorkoutsPreviousMonth;
 
         if (totalWorkoutsCurrentMonth >= 1) {
             String isPlural = totalWorkoutsCurrentMonth > 1 ? "s" : "";
@@ -50,6 +55,12 @@ public class WorkoutStatsService {
                             .formatted(differenceInWorkouts, isPlural)
             ));
         }
+    }
+
+    private void addWeightStats(List<WorkoutStatsDto> userStats, UUID currentUserId) {
+        int totalWeightCurrentMonth = getTotalWeight(currentUserId, 0);
+        int totalWeightPreviousMonth = getTotalWeight(currentUserId, 1);
+        int differenceInWeight = totalWeightCurrentMonth - totalWeightPreviousMonth;
 
         if (totalWeightCurrentMonth > 0) {
             userStats.add(new WorkoutStatsDto(
@@ -72,11 +83,9 @@ public class WorkoutStatsService {
                     "You have lifted " + differenceInWeight + " kg more than the last month!"
             ));
         }
-        return userStats;
     }
 
-    private int getWorkoutCount(Integer offsetMonth) {
-        UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
+    private int getWorkoutCount(UUID currentUserId, Integer offsetMonth) {
         List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getMonthlyDateRangeOffset(offsetMonth);
 
         return workoutRepository
@@ -87,17 +96,14 @@ public class WorkoutStatsService {
                 );
     }
 
-    private int getTotalWeight(Integer offsetMonth) {
-        UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
+    private int getTotalWeight(UUID currentUserId, Integer offsetMonth) {
         List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getMonthlyDateRangeOffset(offsetMonth);
 
-        Integer totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
+        return workoutRepository.getTotalWeightByUserIdAndDateBetween(
                 currentUserId,
                 startAndEndOfTheMonth.getFirst(),
                 startAndEndOfTheMonth.getLast()
         );
-
-        return totalWeight != null ? totalWeight : 0;
     }
 
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit, Integer offsetStartMonth) {

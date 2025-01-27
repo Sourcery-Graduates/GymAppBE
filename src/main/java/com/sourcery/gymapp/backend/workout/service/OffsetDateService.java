@@ -1,14 +1,18 @@
 package com.sourcery.gymapp.backend.workout.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OffsetDateService {
+    private final Clock clock;
 
     /**
      * Returns the start and end of the week with an offset.
@@ -16,7 +20,7 @@ public class OffsetDateService {
      * @return a list containing the start and end of the week.
      */
     public List<ZonedDateTime> getWeeklyDateRangeOffset(Integer offsetWeek) {
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(clock);
         ZonedDateTime startOfWeek = now.minusWeeks(offsetWeek)
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
@@ -51,8 +55,8 @@ public class OffsetDateService {
         return List.of(startOfTheMonth, endOfTheMonth);
     }
 
-    private static ZonedDateTime getOffsetStartMonthFromCurrentDate(Integer offsetStartMonth) {
-        ZonedDateTime currentDate = ZonedDateTime.now();
+    private ZonedDateTime getOffsetStartMonthFromCurrentDate(Integer offsetStartMonth) {
+        ZonedDateTime currentDate = ZonedDateTime.now(clock);
 
         return currentDate
                 .minusMonths(offsetStartMonth)
@@ -60,8 +64,8 @@ public class OffsetDateService {
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
-    private static ZonedDateTime getOffsetEndMonthFromCurrentDate(Integer offsetEndMonth) {
-        ZonedDateTime currentDate = ZonedDateTime.now();
+    private ZonedDateTime getOffsetEndMonthFromCurrentDate(Integer offsetEndMonth) {
+        ZonedDateTime currentDate = ZonedDateTime.now(clock);
 
         return currentDate
                 .minusMonths(offsetEndMonth)
@@ -69,8 +73,8 @@ public class OffsetDateService {
                 .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
     }
 
-    private static ZonedDateTime getEndMonthFromCurrentDate() {
-        ZonedDateTime currentDate = ZonedDateTime.now();
+    private ZonedDateTime getEndMonthFromCurrentDate() {
+        ZonedDateTime currentDate = ZonedDateTime.now(clock);
 
         return currentDate
                 .with(TemporalAdjusters.lastDayOfMonth())

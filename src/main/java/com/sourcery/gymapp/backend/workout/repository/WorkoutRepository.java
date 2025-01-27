@@ -31,7 +31,7 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
                                             ZonedDateTime endOfTheMonth);
 
     @Query(
-            "SELECT SUM(wes.setNumber * wes.reps * wes.weight) as total_weight, w.userId " +
+            "SELECT COALESCE(SUM(wes.setNumber * wes.reps * wes.weight), 0) as total_weight, w.userId " +
             "FROM WorkoutExerciseSet wes " +
             "LEFT JOIN WorkoutExercise we " +
             "ON wes.workoutExercise.id = we.id " +
@@ -41,9 +41,8 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)" +
             "GROUP BY w.userId"
     )
-    Integer getTotalWeightByUserIdAndDateBetween(UUID currentUserId,
-                                              ZonedDateTime startOfTheMonth,
-                                              ZonedDateTime endOfTheMonth);
+    int getTotalWeightByUserIdAndDateBetween(
+            UUID currentUserId, ZonedDateTime startOfTheMonth, ZonedDateTime endOfTheMonth);
 
     @Query(
             "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(e.primaryMuscles, SUM(wes.setNumber)) " +

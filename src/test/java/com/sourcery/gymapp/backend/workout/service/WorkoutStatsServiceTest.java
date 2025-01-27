@@ -14,9 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class WorkoutStatsServiceTest {
 
-
     @Mock
     WorkoutCurrentUserService workoutCurrentUserService;
+
+    @Mock
+    OffsetDateService offsetDateService;
 
     @Mock
     WorkoutService workoutService;
@@ -44,7 +46,6 @@ public class WorkoutStatsServiceTest {
 
         @Test
         void shouldGetWorkoutStatsSuccessfully() {
-            when()
         }
     }
     @Test
