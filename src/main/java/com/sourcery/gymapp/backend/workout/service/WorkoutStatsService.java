@@ -5,7 +5,6 @@ import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
 import com.sourcery.gymapp.backend.workout.util.WeightComparisonUtil;
-import com.sourcery.gymapp.backend.workout.util.OffsetDateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class WorkoutStatsService {
     private final WorkoutCurrentUserService workoutCurrentUserService;
+    private final OffsetDateService offsetDateService;
     private final WorkoutService workoutService;
     private final RoutineService routineService;
     private final WorkoutRepository workoutRepository;
@@ -77,7 +77,7 @@ public class WorkoutStatsService {
 
     private int getWorkoutCount(Integer offsetMonth) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = OffsetDateUtil.getMonthlyDateRangeOffset(offsetMonth);
+        List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getMonthlyDateRangeOffset(offsetMonth);
 
         return workoutRepository
                 .countWorkoutsByUserIdAndDateBetween(
@@ -89,7 +89,7 @@ public class WorkoutStatsService {
 
     private int getTotalWeight(Integer offsetMonth) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheMonth = OffsetDateUtil.getMonthlyDateRangeOffset(offsetMonth);
+        List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getMonthlyDateRangeOffset(offsetMonth);
 
         Integer totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
                 currentUserId,
@@ -107,7 +107,7 @@ public class WorkoutStatsService {
         }
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
 
-        List<ZonedDateTime> startAndEndOfTheMonth = OffsetDateUtil.getStartOffsetAndEndCurrentMonth(offsetStartMonth);
+        List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getStartOffsetAndEndCurrentMonth(offsetStartMonth);
 
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
                 currentUserId,
@@ -123,7 +123,7 @@ public class WorkoutStatsService {
 
     public List<MuscleSetDto> getTotalMuscleSets(Integer offsetWeek) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
-        List<ZonedDateTime> startAndEndOfTheWeek = OffsetDateUtil.getWeeklyDateRangeOffset(offsetWeek);
+        List<ZonedDateTime> startAndEndOfTheWeek = offsetDateService.getWeeklyDateRangeOffset(offsetWeek);
 
         return workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(
                 currentUserId,

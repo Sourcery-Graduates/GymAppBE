@@ -1,14 +1,14 @@
-package com.sourcery.gymapp.backend.workout.util;
+package com.sourcery.gymapp.backend.workout.service;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
-@UtilityClass
-public class OffsetDateUtil {
+@Service
+public class OffsetDateService {
 
     /**
      * Returns the start and end of the week with an offset.
