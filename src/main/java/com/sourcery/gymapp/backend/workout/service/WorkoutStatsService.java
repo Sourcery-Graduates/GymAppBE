@@ -111,6 +111,10 @@ public class WorkoutStatsService {
         if (routinesLimit != null) {
             baseRoutinesLimit = routinesLimit;
         }
+        if (baseRoutinesLimit < 1) {
+            throw new IllegalArgumentException("Routines limit must be greater than 0");
+        }
+
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
 
         List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getStartOffsetAndEndCurrentMonth(offsetStartMonth);

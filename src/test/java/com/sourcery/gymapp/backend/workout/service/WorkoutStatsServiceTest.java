@@ -1,8 +1,9 @@
 package com.sourcery.gymapp.backend.workout.service;
 
-import com.sourcery.gymapp.backend.workout.dto.ResponseRoutineSimpleDto;
-import com.sourcery.gymapp.backend.workout.dto.WorkoutStatsDto;
+import com.sourcery.gymapp.backend.workout.dto.*;
 import com.sourcery.gymapp.backend.workout.factory.RoutineFactory;
+import com.sourcery.gymapp.backend.workout.factory.WorkoutFactory;
+import com.sourcery.gymapp.backend.workout.factory.WorkoutStatsFactory;
 import com.sourcery.gymapp.backend.workout.mapper.RoutineMapper;
 import com.sourcery.gymapp.backend.workout.model.Routine;
 import com.sourcery.gymapp.backend.workout.repository.WorkoutRepository;
@@ -15,28 +16,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class WorkoutStatsServiceTest {
-
-    @Mock
-    Clock fixedClock;
 
     @Mock
     WorkoutCurrentUserService workoutCurrentUserService;
 
     @Mock
     OffsetDateService offsetDateService;
+
+    @Mock
+    WorkoutService workoutService;
+
+    @Mock
+    RoutineService routineService;
 
     @Mock
     WorkoutRepository workoutRepository;
@@ -52,9 +53,7 @@ public class WorkoutStatsServiceTest {
     @BeforeEach
     void setUp() {
         userId = UUID.fromString("910cb97b-d601-4c02-b4b6-c9f985e51a1f");
-        when(workoutCurrentUserService.getCurrentUserId()).thenReturn(userId);
-
-        fixedClock = Clock.fixed(Instant.parse("2023-01-15T12:00:00Z"), ZoneId.of("UTC"));
+        lenient().when(workoutCurrentUserService.getCurrentUserId()).thenReturn(userId);
     }
 
     @Nested
@@ -66,12 +65,12 @@ public class WorkoutStatsServiceTest {
         @BeforeEach
         void setUp() {
             currentMonthRange = List.of(
-                    ZonedDateTime.parse("2023-01-01T00:00:00Z"),
-                    ZonedDateTime.parse("2023-01-31T23:59:59Z")
+                    ZonedDateTime.parse("2025-01-01T00:00:00Z"),
+                    ZonedDateTime.parse("2025-01-31T23:59:59Z")
             );
             previousMonthRange = List.of(
-                    ZonedDateTime.parse("2022-12-01T00:00:00Z"),
-                    ZonedDateTime.parse("2022-12-31T23:59:59Z")
+                    ZonedDateTime.parse("2025-12-01T00:00:00Z"),
+                    ZonedDateTime.parse("2025-12-31T23:59:59Z")
             );
         }
 
@@ -195,20 +194,25 @@ public class WorkoutStatsServiceTest {
     @Nested
     @DisplayName("Get Most Used Routines Tests")
     public class getMostUsedRoutinesTests {
+        List<Routine> routines;
+        List<ZonedDateTime> offsetStartMonthRange;
 
-        @Test
-        void shouldGetMostUsedRoutines() {
-            List<Routine> routines = new ArrayList<>();
+        @BeforeEach
+        void setUp() {
+            routines = new ArrayList<>();
 
             for (int i = 0; i < 10; i++) {
                 routines.add(RoutineFactory.createRoutine());
             }
 
-            List<ZonedDateTime> offsetStartMonthRange = List.of(
-                    ZonedDateTime.parse("2023-10-01T00:00:00Z"),
-                    ZonedDateTime.parse("2023-01-31T23:59:59Z")
+            offsetStartMonthRange = List.of(
+                    ZonedDateTime.parse("2025-10-01T00:00:00Z"),
+                    ZonedDateTime.parse("2025-01-31T23:59:59Z")
             );
+        }
 
+        @Test
+        void shouldGetTopSevenMostUsedRoutines() {
             when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
 
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
@@ -217,15 +221,140 @@ public class WorkoutStatsServiceTest {
             List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(7, 3);
 
             assertEquals(7, mostUsedRoutines.size());
+            verify(routineMapper, times(7)).toSimpleDto(any(Routine.class));
+        }
+
+        @Test
+        void shouldGetTopSevenMostUsedRoutines_WhenRoutinesLimitIsNull() {
+            when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
+
+            when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
+                    .thenReturn(routines);
+
+            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(null, 3);
+
+            assertEquals(7, mostUsedRoutines.size());
+            verify(routineMapper, times(7)).toSimpleDto(any(Routine.class));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentException_WhenRoutinesLimitIsNegative() {
+            assertThrows(IllegalArgumentException.class, () -> workoutStatsService
+                    .getMostUsedRoutines(-10, 3), "Routines limit must be greater than 0");
+        }
+
+        @Test
+        void shouldGetTopTenMostUsedRoutines() {
+            when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
+
+            when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
+                    .thenReturn(routines);
+
+            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(10, 3);
+
+            assertEquals(10, mostUsedRoutines.size());
+            verify(routineMapper, times(10)).toSimpleDto(any(Routine.class));
         }
 
     }
 
-    @Test
-    void getTotalMuscleSets() {
+    @Nested
+    @DisplayName("Get Total Muscle Sets Tests")
+    public class GetTotalMuscleSetsTests {
+        List<ZonedDateTime> startAndEndOfTheWeekOffsetRange;
+        List<MuscleSetDto> muscleSets;
+
+        @BeforeEach
+        void setUp() {
+            startAndEndOfTheWeekOffsetRange = List.of(
+                    ZonedDateTime.parse("2025-01-01T00:00:00Z"),
+                    ZonedDateTime.parse("2025-01-07T23:59:59Z")
+            );
+
+            muscleSets = List.of(
+                    WorkoutStatsFactory.createMuscleSetDto(List.of("Biceps"), 10L),
+                    WorkoutStatsFactory.createMuscleSetDto(List.of("Triceps"), 5L));
+        }
+
+        @Test
+        void shouldGetTotalMuscleSets() {
+            when(offsetDateService.getWeeklyDateRangeOffset(0)).thenReturn(startAndEndOfTheWeekOffsetRange);
+
+            when(workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(userId,
+                    startAndEndOfTheWeekOffsetRange.get(0), startAndEndOfTheWeekOffsetRange.get(1)))
+                    .thenReturn(muscleSets);
+
+            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSets(0);
+
+            assertEquals(2, totalMuscleSets.size());
+        }
+
+        @Test
+        void shouldGetEmptyTotalMuscleSets() {
+            when(offsetDateService.getWeeklyDateRangeOffset(0)).thenReturn(startAndEndOfTheWeekOffsetRange);
+
+            when(workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(userId,
+                    startAndEndOfTheWeekOffsetRange.get(0), startAndEndOfTheWeekOffsetRange.get(1)))
+                    .thenReturn(List.of());
+
+            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSets(0);
+
+            assertEquals(0, totalMuscleSets.size());
+        }
     }
 
-    @Test
-    void checkIfUserIsNew() {
+    @Nested
+    @DisplayName("Check If User Is New Tests")
+    public class CheckIfUserIsNewTests {
+        List<ResponseWorkoutDto> workouts;
+        List<ResponseRoutineDto> routines;
+
+        @BeforeEach
+        void setup() {
+            workouts = List.of(
+                    WorkoutFactory.createResponseWorkoutDto(),
+                    WorkoutFactory.createResponseWorkoutDto(),
+                    WorkoutFactory.createResponseWorkoutDto()
+            );
+
+            routines = List.of(
+                    RoutineFactory.createResponseRoutineDto(),
+                    RoutineFactory.createResponseRoutineDto(),
+                    RoutineFactory.createResponseRoutineDto()
+            );
+        }
+
+        @Test
+        void shouldReturnTrue_WhenWorkoutAndRoutinesListAreEmpty() {
+            when(workoutService.getWorkoutsByUserId()).thenReturn(List.of());
+            when(routineService.getRoutinesByUserId()).thenReturn(List.of());
+
+            assertTrue(workoutStatsService.checkIfUserIsNew());
+        }
+
+        @Test
+        void shouldReturnFalse_WhenUserHasWorkoutsAndRoutines() {
+            when(workoutService.getWorkoutsByUserId()).thenReturn(workouts);
+            when(routineService.getRoutinesByUserId()).thenReturn(routines);
+
+            assertFalse(workoutStatsService.checkIfUserIsNew());
+        }
+
+
+        @Test
+        void shouldReturnFalse_WhenUserHasWorkouts() {
+            when(workoutService.getWorkoutsByUserId()).thenReturn(workouts);
+            when(routineService.getRoutinesByUserId()).thenReturn(List.of());
+
+            assertFalse(workoutStatsService.checkIfUserIsNew());
+        }
+
+        @Test
+        void shouldReturnFalse_WhenUserHasRoutines() {
+            when(workoutService.getWorkoutsByUserId()).thenReturn(List.of());
+            when(routineService.getRoutinesByUserId()).thenReturn(routines);
+
+            assertFalse(workoutStatsService.checkIfUserIsNew());
+        }
     }
 }
