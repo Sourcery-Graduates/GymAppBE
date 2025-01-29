@@ -6,9 +6,12 @@ import com.sourcery.gymapp.backend.authentication.dto.UserDetailsDto;
 import com.sourcery.gymapp.backend.authentication.exception.UserAlreadyExistsException;
 import com.sourcery.gymapp.backend.authentication.jwt.GymAppJwtProvider;
 import com.sourcery.gymapp.backend.authentication.mapper.UserMapper;
+import com.sourcery.gymapp.backend.authentication.producer.AuthKafkaProducer;
 import com.sourcery.gymapp.backend.authentication.repository.UserRepository;
 import com.sourcery.gymapp.backend.authentication.exception.UserNotAuthenticatedException;
+import com.sourcery.gymapp.backend.events.RegistrationEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +27,8 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final GymAppJwtProvider jwtProvider;
+    private final AuthKafkaProducer kafkaEventsProducer;
+    private final KafkaTemplate kafkaTemplate;
 
     @Transactional(readOnly = true)
     public UserAuthDto authenticateUser(Authentication authentication) {
@@ -51,6 +56,9 @@ public class AuthService {
         }
 
         registrationRequest.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-        userRepository.save(userMapper.toEntity(registrationRequest));
+        var user = userRepository.save(userMapper.toEntity(registrationRequest));
+
+        RegistrationEvent event = userMapper.toRegistrationEvent(user, registrationRequest);
+        kafkaEventsProducer.sendRegistrationEvent(event);
     }
 }
