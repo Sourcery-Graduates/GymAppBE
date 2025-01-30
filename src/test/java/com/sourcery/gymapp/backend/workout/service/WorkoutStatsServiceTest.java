@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,9 +85,9 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.countWorkoutsByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(5);
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, currentMonthRange.get(0), currentMonthRange.get(1)))
-                    .thenReturn(100000);
+                    .thenReturn(Optional.of(100000));
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
-                    .thenReturn(50000);
+                    .thenReturn(Optional.of(50000));
 
             List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
 
@@ -117,9 +118,9 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.countWorkoutsByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(0);
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, currentMonthRange.get(0), currentMonthRange.get(1)))
-                    .thenReturn(10000);
+                    .thenReturn(Optional.of(10000));
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
-                    .thenReturn(0);
+                    .thenReturn(Optional.of(0));
 
             List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
 
@@ -150,9 +151,9 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.countWorkoutsByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(5);
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, currentMonthRange.get(0), currentMonthRange.get(1)))
-                    .thenReturn(50000);
+                    .thenReturn(Optional.of(50000));
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
-                    .thenReturn(100000);
+                    .thenReturn(Optional.of(100000));
 
             List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
 
@@ -181,9 +182,9 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.countWorkoutsByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(12);
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, currentMonthRange.get(0), currentMonthRange.get(1)))
-                    .thenReturn(0);
+                    .thenReturn(Optional.of(0));
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
-                    .thenReturn(70000);
+                    .thenReturn(Optional.of(70000));
 
             List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
 
