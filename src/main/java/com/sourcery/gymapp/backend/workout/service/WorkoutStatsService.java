@@ -119,7 +119,7 @@ public class WorkoutStatsService {
 
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
 
-        List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getStartOffsetAndEndCurrentMonth(offsetStartMonth);
+        List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getOffsetStartAndCurrentDate(offsetStartMonth);
 
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(
                 currentUserId,

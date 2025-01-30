@@ -29,25 +29,25 @@ import static org.mockito.Mockito.*;
 public class WorkoutStatsServiceTest {
 
     @Mock
-    WorkoutCurrentUserService workoutCurrentUserService;
+    private WorkoutCurrentUserService workoutCurrentUserService;
 
     @Mock
-    OffsetDateService offsetDateService;
+    private OffsetDateService offsetDateService;
 
     @Mock
-    WorkoutService workoutService;
+    private WorkoutService workoutService;
 
     @Mock
-    RoutineService routineService;
+    private RoutineService routineService;
 
     @Mock
-    WorkoutRepository workoutRepository;
+    private WorkoutRepository workoutRepository;
 
     @Mock
-    RoutineMapper routineMapper;
+    private RoutineMapper routineMapper;
 
     @InjectMocks
-    WorkoutStatsService workoutStatsService;
+    private WorkoutStatsService workoutStatsService;
 
     private UUID userId;
 
@@ -214,7 +214,7 @@ public class WorkoutStatsServiceTest {
 
         @Test
         void shouldGetTopSevenMostUsedRoutines() {
-            when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
+            when(offsetDateService.getOffsetStartAndCurrentDate(3)).thenReturn(offsetStartMonthRange);
 
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
@@ -227,7 +227,7 @@ public class WorkoutStatsServiceTest {
 
         @Test
         void shouldGetTopSevenMostUsedRoutines_WhenRoutinesLimitIsNull() {
-            when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
+            when(offsetDateService.getOffsetStartAndCurrentDate(3)).thenReturn(offsetStartMonthRange);
 
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
@@ -246,7 +246,7 @@ public class WorkoutStatsServiceTest {
 
         @Test
         void shouldGetTopTenMostUsedRoutines() {
-            when(offsetDateService.getStartOffsetAndEndCurrentMonth(3)).thenReturn(offsetStartMonthRange);
+            when(offsetDateService.getOffsetStartAndCurrentDate(3)).thenReturn(offsetStartMonthRange);
 
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
