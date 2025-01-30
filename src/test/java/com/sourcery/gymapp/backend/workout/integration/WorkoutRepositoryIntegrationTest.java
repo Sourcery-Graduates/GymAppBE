@@ -37,23 +37,27 @@ public class WorkoutRepositoryIntegrationTest extends BaseWorkoutIntegrationJPAT
     WorkoutExerciseSetRepository workoutExerciseSetRepository;
 
     UUID userId;
+    List<Routine> routines;
 
     @BeforeEach
     void setUp() {
-        userId = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        userId = UUID.randomUUID();
 
         Exercise exercise1 = ExerciseFactory.createExercise(UUID.randomUUID(), "Chest exercise", List.of("chest"));
         Exercise exercise2 = ExerciseFactory.createExercise(UUID.randomUUID(), "Back exercise", List.of("back"));
 
         List<Exercise> exercises = exerciseRepository.saveAll(List.of(exercise1, exercise2));
 
-        Routine routine1 = RoutineFactory.createRoutine("routine1", userId);
-        Routine routine2 = RoutineFactory.createRoutine("routine2", userId);
+        Routine routine1 = RoutineFactory.createRoutine(
+                "routine1", UUID.fromString("00000000-0000-0000-0000-000000000001"), userId);
 
-        List<Routine> routines = routineRepository.saveAll(List.of(routine1, routine2));
+        Routine routine2 = RoutineFactory.createRoutine(
+                "routine2", UUID.fromString("00000000-0000-0000-0000-000000000002"), userId);
 
-        Workout workout1 = WorkoutFactory.createWorkout(userId, "workout1", ZonedDateTime.parse("2025-12-01T00:00:00Z"), routines.getFirst());
-        Workout workout2 = WorkoutFactory.createWorkout(userId, "workout2", ZonedDateTime.parse("2025-12-02T00:00:00Z"), routines.getFirst());
+        routines = routineRepository.saveAll(List.of(routine1, routine2));
+
+        Workout workout1 = WorkoutFactory.createWorkout(userId, "workout1", ZonedDateTime.parse("2024-12-01T00:00:00Z"), routines.getFirst());
+        Workout workout2 = WorkoutFactory.createWorkout(userId, "workout2", ZonedDateTime.parse("2024-12-02T00:00:00Z"), routines.getFirst());
         Workout workout3 = WorkoutFactory.createWorkout(userId, "workout3", ZonedDateTime.parse("2025-01-01T00:00:00Z"), routines.get(1));
         Workout workout4 = WorkoutFactory.createWorkout(userId, "workout4", ZonedDateTime.parse("2025-01-02T00:00:00Z"), routines.get(1));
         Workout workout5 = WorkoutFactory.createWorkout(userId, "workout5", ZonedDateTime.parse("2025-01-03T00:00:00Z"), routines.get(1));
@@ -82,10 +86,10 @@ public class WorkoutRepositoryIntegrationTest extends BaseWorkoutIntegrationJPAT
     }
 
     @Test
-    void testCountWorkoutsByUserIdAndDateBetween() {
+    void testCountWorkoutsByUserIdAndDateBetween_shouldReturnWorkoutCountFromMonth() {
         int workoutCount = workoutRepository.countWorkoutsByUserIdAndDateBetween(userId,
-                ZonedDateTime.parse("2025-12-01T00:00:00Z"),
-                ZonedDateTime.parse("2025-12-31T00:00:00Z")
+                ZonedDateTime.parse("2024-12-01T00:00:00Z"),
+                ZonedDateTime.parse("2024-12-31T00:00:00Z")
         );
 
         assertThat(workoutCount).isEqualTo(2);
@@ -103,10 +107,10 @@ public class WorkoutRepositoryIntegrationTest extends BaseWorkoutIntegrationJPAT
 
 
     @Test
-    void testGetTotalWeightByUserIdAndDateBetween() {
+    void testGetTotalWeightByUserIdAndDateBetween_shouldReturnTotalWeightFromMonth() {
         Optional<Integer> totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(userId,
-                ZonedDateTime.parse("2025-12-01T00:00:00Z"),
-                ZonedDateTime.parse("2025-12-31T00:00:00Z")
+                ZonedDateTime.parse("2024-12-01T00:00:00Z"),
+                ZonedDateTime.parse("2024-12-31T00:00:00Z")
         );
 
         assertThat(totalWeight).isPresent();
@@ -124,10 +128,10 @@ public class WorkoutRepositoryIntegrationTest extends BaseWorkoutIntegrationJPAT
     }
 
     @Test
-    void testGetTotalMuscleSetsByUserIdAndDateBetween() {
+    void testGetTotalMuscleSetsByUserIdAndDateBetween_shouldReturnMuscleSetsFromWeek() {
         List<MuscleSetDto> muscleSets = workoutRepository.getTotalMuscleSetsByUserIdAndDateBetween(userId,
-                ZonedDateTime.parse("2025-12-01T00:00:00Z"),
-                ZonedDateTime.parse("2025-12-31T00:00:00Z")
+                ZonedDateTime.parse("2024-12-01T00:00:00Z"),
+                ZonedDateTime.parse("2024-12-08T00:00:00Z")
         );
 
         assertThat(muscleSets).hasSize(2);
@@ -148,11 +152,22 @@ public class WorkoutRepositoryIntegrationTest extends BaseWorkoutIntegrationJPAT
     }
 
     @Test
-    void testGetMostUsedRoutinesByUserIdAndDateBetween() {
+    void testGetMostUsedRoutinesByUserIdAndDateBetween_shouldReturnMostUsedFromLastThreeMonths() {
         List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId,
-                ZonedDateTime.parse("2025-10-01T00:00:00Z"),
-                ZonedDateTime.parse("2025-01-31T00:00:00Z"));
+                ZonedDateTime.parse("2024-10-05T00:00:00Z"),
+                ZonedDateTime.parse("2025-01-05T00:00:00Z"));
 
         assertThat(routines).hasSize(2);
+        assertThat(routines).containsExactly(routines.getFirst(), routines.get(1));
+    }
+
+    @Test
+    void testGetMostUsedRoutinesByUserIdAndDateBetween_shouldReturnEmpty() {
+        List<Routine> routines = workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId,
+                ZonedDateTime.parse("2025-01-05T00:00:00Z"),
+                ZonedDateTime.parse("2025-04-05T00:00:00Z"));
+
+        assertThat(routines).isEmpty();
+        assertThat(routines).hasSize(0);
     }
 }
