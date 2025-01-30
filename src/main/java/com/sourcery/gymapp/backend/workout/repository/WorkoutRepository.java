@@ -63,9 +63,9 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
 
     @Query(
             "SELECT r as routine " +
-            "FROM Workout w " +
-            "LEFT JOIN Routine r " +
-            "ON w.routine.id = r.id " +
+            "FROM Routine r " +
+            "LEFT JOIN Workout w " +
+            "ON r.id = w.routine.id " +
             "WHERE (w.userId = :currentUserId) " +
             "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)" +
             "GROUP BY r " +
