@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -27,31 +28,31 @@ public interface WorkoutRepository extends JpaRepository<Workout, UUID> {
             "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)"
     )
     int countWorkoutsByUserIdAndDateBetween(UUID currentUserId,
-                                            ZonedDateTime startOfTheMonth,
-                                            ZonedDateTime endOfTheMonth);
+                                                          ZonedDateTime startOfTheMonth,
+                                                          ZonedDateTime endOfTheMonth);
 
     @Query(
-            "SELECT COALESCE(SUM(wes.setNumber * wes.reps * wes.weight), 0) as total_weight, w.userId " +
+            "SELECT SUM(wes.setNumber * wes.reps * wes.weight) as total_weight, w.userId " +
             "FROM WorkoutExerciseSet wes " +
             "LEFT JOIN WorkoutExercise we " +
             "ON wes.workoutExercise.id = we.id " +
-            "RIGHT JOIN Workout w " +
+            "LEFT JOIN Workout w " +
             "ON we.workout.id = w.id " +
             "WHERE (w.userId = :currentUserId) " +
             "AND (w.date BETWEEN :startOfTheMonth AND :endOfTheMonth)" +
             "GROUP BY w.userId"
     )
-    int getTotalWeightByUserIdAndDateBetween(
+    Optional<Integer> getTotalWeightByUserIdAndDateBetween(
             UUID currentUserId, ZonedDateTime startOfTheMonth, ZonedDateTime endOfTheMonth);
 
     @Query(
             "SELECT new com.sourcery.gymapp.backend.workout.dto.MuscleSetDto(e.primaryMuscles, SUM(wes.setNumber)) " +
             "FROM Workout as w " +
-            "LEFT JOIN WorkoutExercise as we " +
+            "RIGHT JOIN WorkoutExercise as we " +
             "ON w.id = we.workout.id " +
-            "LEFT JOIN  WorkoutExerciseSet as wes " +
+            "RIGHT JOIN  WorkoutExerciseSet as wes " +
             "ON we.id = wes.workoutExercise.id " +
-            "LEFT JOIN Exercise e " +
+            "RIGHT JOIN Exercise e " +
             "ON we.exercise.id = e.id " +
             "WHERE (w.userId = :currentUserId) " +
             "AND (w.date BETWEEN :startOfTheWeek AND :endOfTheWeek) " +

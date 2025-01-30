@@ -99,11 +99,13 @@ public class WorkoutStatsService {
     private int getTotalWeight(UUID currentUserId, Integer offsetMonth) {
         List<ZonedDateTime> startAndEndOfTheMonth = offsetDateService.getMonthlyDateRangeOffset(offsetMonth);
 
-        return workoutRepository.getTotalWeightByUserIdAndDateBetween(
+        Optional<Integer> totalWeight = workoutRepository.getTotalWeightByUserIdAndDateBetween(
                 currentUserId,
                 startAndEndOfTheMonth.getFirst(),
                 startAndEndOfTheMonth.getLast()
         );
+
+        return totalWeight.orElse(0);
     }
 
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit, Integer offsetStartMonth) {
