@@ -22,6 +22,18 @@ public class RoutineFactory {
         return routine;
     }
 
+    public static Routine createRoutine(String name, UUID userId) {
+        Routine routine = new Routine();
+
+        routine.setId(UUID.randomUUID());
+        routine.setName(name);
+        routine.setDescription("Test Description");
+        routine.setCreatedAt(LocalDateTime.now());
+        routine.setUserId(userId);
+        routine.setLikesCount(0L);
+        return routine;
+    }
+
     public static Routine createRoutine(String name, String description) {
         return createRoutine(
                 name,

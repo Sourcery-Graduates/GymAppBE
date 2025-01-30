@@ -45,6 +45,23 @@ public class ExerciseFactory {
         return exercise;
     }
 
+    public static Exercise createExercise(UUID uuid, String name, List<String> primaryMuscles) {
+        Exercise exercise = new Exercise();
+        exercise.setId(uuid);
+        exercise.setName(name);
+        exercise.setForce("test force");
+        exercise.setLevel("intermediate");
+        exercise.setMechanic("compound");
+        exercise.setEquipment("dumbbell");
+        exercise.setPrimaryMuscles(primaryMuscles);
+        exercise.setSecondaryMuscles(List.of("triceps"));
+        exercise.setDescription(List.of("Step 1: Get into position.", "Step 2: Execute the exercise."));
+        exercise.setCategory("strength");
+        exercise.setImages(List.of("image1.jpg", "image2.jpg"));
+
+        return exercise;
+    }
+
     public static ExerciseSimpleDto createExerciseSimpleDto(
             UUID exerciseId,
             String exerciseName) {
