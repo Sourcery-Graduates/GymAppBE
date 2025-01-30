@@ -20,27 +20,31 @@ public class OffsetDateService {
      * @return a list containing the start and end of the week.
      */
     public List<ZonedDateTime> getWeeklyDateRangeOffset(Integer offsetWeek) {
+        checkIsOffsetWeekNegative(offsetWeek);
+
         ZonedDateTime now = ZonedDateTime.now(clock);
         ZonedDateTime startOfWeek = now.minusWeeks(offsetWeek)
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        ZonedDateTime endOfWeek = startOfWeek.plusDays(7)
+        ZonedDateTime endOfWeek = startOfWeek.with(DayOfWeek.SUNDAY)
                 .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
         return List.of(startOfWeek, endOfWeek);
     }
 
     /**
-     * Returns the start of the month with an offset and the end of the current month.
+     * Returns the start of the month with an offset and current date.
      * @param offsetStartMonth the number of months to offset from the current month.
-     * @return a list containing the start of the offset month and the end of the current month.
+     * @return a list containing the start of the offset month and the current date.
      */
-    public List<ZonedDateTime> getStartOffsetAndEndCurrentMonth(Integer offsetStartMonth) {
-        ZonedDateTime startOfTheMonth = getOffsetStartMonthFromCurrentDate(offsetStartMonth);
-        ZonedDateTime endOfTheMonth = getEndMonthFromCurrentDate();
+    public List<ZonedDateTime> getOffsetStartAndCurrentDate(Integer offsetStartMonth) {
+        checkIsOffsetWeekNegative(offsetStartMonth);
 
-        return List.of(startOfTheMonth, endOfTheMonth);
+        ZonedDateTime startOfTheMonth = getOffsetStartMonthFromCurrentDate(offsetStartMonth);
+        ZonedDateTime currentDate = ZonedDateTime.now(clock);
+
+        return List.of(startOfTheMonth, currentDate);
     }
 
     /**
@@ -49,6 +53,8 @@ public class OffsetDateService {
      * @return a list containing the start and end of the offset month.
      */
     public List<ZonedDateTime> getMonthlyDateRangeOffset(Integer offsetMonth) {
+        checkIsOffsetWeekNegative(offsetMonth);
+
         ZonedDateTime startOfTheMonth = getOffsetStartMonthFromCurrentDate(offsetMonth);
         ZonedDateTime endOfTheMonth =  getOffsetEndMonthFromCurrentDate(offsetMonth);
 
@@ -60,7 +66,6 @@ public class OffsetDateService {
 
         return currentDate
                 .minusMonths(offsetStartMonth)
-                .with(TemporalAdjusters.firstDayOfMonth())
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
@@ -73,11 +78,9 @@ public class OffsetDateService {
                 .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
     }
 
-    private ZonedDateTime getEndMonthFromCurrentDate() {
-        ZonedDateTime currentDate = ZonedDateTime.now(clock);
-
-        return currentDate
-                .with(TemporalAdjusters.lastDayOfMonth())
-                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+    private void checkIsOffsetWeekNegative(Integer offsetWeek) {
+        if (offsetWeek < 0) {
+            throw new IllegalArgumentException("Offset week cannot be negative");
+        }
     }
 }
