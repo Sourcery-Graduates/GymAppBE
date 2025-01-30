@@ -19,7 +19,7 @@ public class ExerciseFactory {
         exercise.setLevel("Intermediate");
         exercise.setMechanic("Compound");
         exercise.setEquipment("Dumbbell");
-        exercise.setPrimaryMuscles(List.of("Chest", "Shoulders"));
+        exercise.setPrimaryMuscles(List.of("Chest"));
         exercise.setSecondaryMuscles(List.of("Triceps"));
         exercise.setDescription(List.of("Step 1: Get into position.", "Step 2: Execute the exercise."));
         exercise.setCategory("Strength");
@@ -32,14 +32,14 @@ public class ExerciseFactory {
         Exercise exercise = new Exercise();
         exercise.setId(uuid);
         exercise.setName(name);
-        exercise.setForce("Test Force");
-        exercise.setLevel("Intermediate");
-        exercise.setMechanic("Compound");
-        exercise.setEquipment("Dumbbell");
-        exercise.setPrimaryMuscles(List.of("Chest", "Shoulders"));
-        exercise.setSecondaryMuscles(List.of("Triceps"));
+        exercise.setForce("test force");
+        exercise.setLevel("intermediate");
+        exercise.setMechanic("compound");
+        exercise.setEquipment("dumbbell");
+        exercise.setPrimaryMuscles(List.of("chest"));
+        exercise.setSecondaryMuscles(List.of("triceps"));
         exercise.setDescription(List.of("Step 1: Get into position.", "Step 2: Execute the exercise."));
-        exercise.setCategory("Strength");
+        exercise.setCategory("strength");
         exercise.setImages(List.of("image1.jpg", "image2.jpg"));
 
         return exercise;
