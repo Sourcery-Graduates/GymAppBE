@@ -39,6 +39,6 @@ public class WeightComparisonUtil {
                 return range.message;
             }
         }
-        return "Weight out of range.";
+        return "user moves unlimited weight! 💪";
     }
 }

@@ -58,8 +58,8 @@ public class WorkoutStatsServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Workout Stats Tests")
-    public class GetWorkoutStatsTests {
+    @DisplayName("Get Workout Stats By Month Tests")
+    public class GetWorkoutStatsByMonthTests {
         List<ZonedDateTime> currentMonthRange;
         List<ZonedDateTime> previousMonthRange;
 
@@ -89,7 +89,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(Optional.of(50000));
 
-            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
+            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStatsByMonth();
 
             List<String> expectedMessages = List.of(
                     "You have completed 10 workouts this month!",
@@ -122,7 +122,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(Optional.of(0));
 
-            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
+            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStatsByMonth();
 
             List<String> expectedMessages = List.of(
                     "You have completed 1 workout this month!",
@@ -155,7 +155,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(Optional.of(100000));
 
-            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
+            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStatsByMonth();
 
             List<String> expectedMessages = List.of(
                     "You have completed 3 workouts this month!",
@@ -186,15 +186,15 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getTotalWeightByUserIdAndDateBetween(userId, previousMonthRange.get(0), previousMonthRange.get(1)))
                     .thenReturn(Optional.of(70000));
 
-            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStats();
+            List<WorkoutStatsDto> workoutStats = workoutStatsService.getWorkoutStatsByMonth();
 
             assertEquals(0, workoutStats.size());
         }
     }
 
     @Nested
-    @DisplayName("Get Most Used Routines Tests")
-    public class getMostUsedRoutinesTests {
+    @DisplayName("Get Most Used Routines By Month Tests")
+    public class getMostUsedRoutinesByMonthTests {
         List<Routine> routines;
         List<ZonedDateTime> offsetStartMonthRange;
 
@@ -219,7 +219,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
 
-            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(7, 3);
+            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutinesByMonth(7, 3);
 
             assertEquals(7, mostUsedRoutines.size());
             verify(routineMapper, times(7)).toSimpleDto(any(Routine.class));
@@ -232,7 +232,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
 
-            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(null, 3);
+            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutinesByMonth(null, 3);
 
             assertEquals(7, mostUsedRoutines.size());
             verify(routineMapper, times(7)).toSimpleDto(any(Routine.class));
@@ -241,7 +241,7 @@ public class WorkoutStatsServiceTest {
         @Test
         void shouldThrowIllegalArgumentException_WhenRoutinesLimitIsNegative() {
             assertThrows(IllegalArgumentException.class, () -> workoutStatsService
-                    .getMostUsedRoutines(-10, 3), "Routines limit must be greater than 0");
+                    .getMostUsedRoutinesByMonth(-10, 3), "Routines limit must be greater than 0");
         }
 
         @Test
@@ -251,7 +251,7 @@ public class WorkoutStatsServiceTest {
             when(workoutRepository.getMostUsedRoutinesByUserIdAndDateBetween(userId, offsetStartMonthRange.get(0), offsetStartMonthRange.get(1)))
                     .thenReturn(routines);
 
-            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutines(10, 3);
+            List<ResponseRoutineSimpleDto> mostUsedRoutines = workoutStatsService.getMostUsedRoutinesByMonth(10, 3);
 
             assertEquals(10, mostUsedRoutines.size());
             verify(routineMapper, times(10)).toSimpleDto(any(Routine.class));
@@ -260,8 +260,8 @@ public class WorkoutStatsServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Total Muscle Sets Tests")
-    public class GetTotalMuscleSetsTests {
+    @DisplayName("Get Total Muscle Sets By Week Tests")
+    public class GetTotalMuscleSetsByWeekTests {
         List<ZonedDateTime> startAndEndOfTheWeekOffsetRange;
         List<MuscleSetDto> muscleSets;
 
@@ -285,7 +285,7 @@ public class WorkoutStatsServiceTest {
                     startAndEndOfTheWeekOffsetRange.get(0), startAndEndOfTheWeekOffsetRange.get(1)))
                     .thenReturn(muscleSets);
 
-            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSets(0);
+            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSetsByWeek(0);
 
             assertEquals(2, totalMuscleSets.size());
         }
@@ -298,7 +298,7 @@ public class WorkoutStatsServiceTest {
                     startAndEndOfTheWeekOffsetRange.get(0), startAndEndOfTheWeekOffsetRange.get(1)))
                     .thenReturn(List.of());
 
-            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSets(0);
+            List<MuscleSetDto> totalMuscleSets = workoutStatsService.getTotalMuscleSetsByWeek(0);
 
             assertEquals(0, totalMuscleSets.size());
         }

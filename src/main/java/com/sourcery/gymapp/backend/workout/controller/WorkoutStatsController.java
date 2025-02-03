@@ -20,7 +20,7 @@ public class WorkoutStatsController {
 
     @GetMapping("")
     public List<WorkoutStatsDto> getWorkoutStats() {
-        return workoutStatsService.getWorkoutStats();
+        return workoutStatsService.getWorkoutStatsByMonth();
     }
 
     @GetMapping("/is-user-new")
@@ -32,12 +32,12 @@ public class WorkoutStatsController {
     public List<ResponseRoutineSimpleDto> getMostUsedRoutines(
             @RequestParam Integer routinesLimit,
             @RequestParam Integer offsetStartMonth) {
-        return workoutStatsService.getMostUsedRoutines(routinesLimit, offsetStartMonth);
+        return workoutStatsService.getMostUsedRoutinesByMonth(routinesLimit, offsetStartMonth);
     }
 
     @GetMapping("/muscle-sets")
     public List<MuscleSetDto> getTotalMuscleSets(
             @RequestParam Integer offsetWeek) {
-        return workoutStatsService.getTotalMuscleSets(offsetWeek);
+        return workoutStatsService.getTotalMuscleSetsByWeek(offsetWeek);
     }
 }

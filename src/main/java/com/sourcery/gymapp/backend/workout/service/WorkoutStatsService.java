@@ -21,7 +21,7 @@ public class WorkoutStatsService {
     private final WorkoutRepository workoutRepository;
     private final RoutineMapper routineMapper;
 
-    public List<WorkoutStatsDto> getWorkoutStats() {
+    public List<WorkoutStatsDto> getWorkoutStatsByMonth() {
         UUID userId = workoutCurrentUserService.getCurrentUserId();
         List<WorkoutStatsDto> userStats = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class WorkoutStatsService {
         return totalWeight.orElse(0);
     }
 
-    public List<ResponseRoutineSimpleDto> getMostUsedRoutines(Integer routinesLimit, Integer offsetStartMonth) {
+    public List<ResponseRoutineSimpleDto> getMostUsedRoutinesByMonth(Integer routinesLimit, Integer offsetStartMonth) {
         int baseRoutinesLimit = 7;
         if (routinesLimit != null) {
             baseRoutinesLimit = routinesLimit;
@@ -133,7 +133,7 @@ public class WorkoutStatsService {
                 .toList();
     }
 
-    public List<MuscleSetDto> getTotalMuscleSets(Integer offsetWeek) {
+    public List<MuscleSetDto> getTotalMuscleSetsByWeek(Integer offsetWeek) {
         UUID currentUserId = workoutCurrentUserService.getCurrentUserId();
         List<ZonedDateTime> startAndEndOfTheWeek = offsetDateService.getWeeklyDateRangeOffset(offsetWeek);
 
