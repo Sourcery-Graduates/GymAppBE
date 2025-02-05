@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/workout/exercise")
@@ -24,6 +26,15 @@ public class ExerciseController {
             @RequestParam(required = false) String prefix) {
 
         return exerciseService.getExercisesByPrefix(prefix, pageable);
+    }
+
+    @GetMapping("/primary-muscle")
+    public ExercisePageDto getPagedExercisesByPrimaryMuscle(
+            @ParameterObject @PageableDefault(size = 10, sort = "name") Pageable pageable,
+            @RequestParam(required = false) String prefix,
+            @RequestParam(required = false) String primaryMuscle) {
+
+        return exerciseService.getFilteredExercises(prefix, primaryMuscle, pageable);
     }
 
 }
