@@ -41,9 +41,9 @@ public class ExerciseService {
     }
 
     public ExercisePageDto getFilteredExercises(String prefix, String primaryMuscle, Pageable pageable) {
-        if (primaryMuscle == null || primaryMuscle.isBlank() && (prefix != null && !prefix.isBlank())) {
+        if (primaryMuscle == null || primaryMuscle.isBlank()) {
             return getExercisesByPrefix(prefix, pageable);
-        } else if (!primaryMuscle.isBlank() && (prefix == null || prefix.isBlank())) {
+        } else if (prefix == null || prefix.isBlank()) {
             return getExercisesByPrimaryMuscle(primaryMuscle, pageable);
         } else {
             return getExercisesByPrimaryMuscleAndPrefix(prefix, primaryMuscle, pageable);
@@ -68,7 +68,7 @@ public class ExerciseService {
         );
     }
 
-    public ExercisePageDto getExercisesByPrimaryMuscle(String primaryMuscle, Pageable pageable) {
+    private ExercisePageDto getExercisesByPrimaryMuscle(String primaryMuscle, Pageable pageable) {
         Page<Exercise> exercisePage;
 
         String primaryMusclePrepared = "{" + primaryMuscle + "}";
@@ -84,7 +84,7 @@ public class ExerciseService {
         );
     }
 
-    public ExercisePageDto getExercisesByPrimaryMuscleAndPrefix(
+    private ExercisePageDto getExercisesByPrimaryMuscleAndPrefix(
             String prefix, String primaryMuscle, Pageable pageable) {
         String primaryMusclePrepared = "{" + primaryMuscle + "}";
 
