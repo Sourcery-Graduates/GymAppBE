@@ -28,13 +28,15 @@ public interface ExerciseRepository extends JpaRepository<Exercise, UUID> {
 
     @Query(value = "SELECT * FROM workout_data.exercise " +
             "WHERE primary_muscles @> CAST(:primaryMuscle AS text[])",
+            countQuery = "SELECT COUNT(*) FROM workout_data.exercise " +
+                    "WHERE primary_muscles @> CAST(:primaryMuscle AS text[])",
             nativeQuery = true)
     Page<Exercise> findAllByPrimaryMuscle(@Param("primaryMuscle") String primaryMuscle, Pageable pageable);
 
     @Query(value = "SELECT * FROM workout_data.exercise " +
             "WHERE primary_muscles @> CAST(:primaryMuscle AS text[]) " +
-            "AND name ILIKE :prefix || '%' " +
-            "OR name ILIKE '%' || :prefix || '%'",
+            "AND (name ILIKE :prefix || '%' " +
+            "OR name ILIKE '%' || :prefix || '%')",
             countQuery = "SELECT COUNT(*) FROM workout_data.exercise " +
                     "WHERE primary_muscles @> CAST(:primaryMuscle AS text[]) " +
                     "AND (name ILIKE :prefix || '%' OR name ILIKE '%' || :prefix || '%')",
