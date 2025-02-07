@@ -41,16 +41,6 @@ public class ExerciseService {
         return exerciseMap;
     }
 
-    public ExercisePageDto getFilteredExercises(String prefix, String primaryMuscle, Pageable pageable) {
-        if (primaryMuscle == null || primaryMuscle.isBlank()) {
-            return getExercisesByPrefix(prefix, pageable);
-        } else if (prefix == null || prefix.isBlank()) {
-            return getExercisesByPrimaryMuscle(primaryMuscle, pageable);
-        } else {
-            return getExercisesByPrimaryMuscleAndPrefix(prefix, primaryMuscle, pageable);
-        }
-    }
-
     public ExercisePageDto getExercisesByPrefix(String prefix, Pageable pageable) {
         Page<Exercise> exercisePage;
 
@@ -69,35 +59,31 @@ public class ExerciseService {
         );
     }
 
-    private ExercisePageDto getExercisesByPrimaryMuscle(String primaryMuscle, Pageable pageable) {
-        Page<Exercise> exercisePage;
-
-        String primaryMuscleWrapped = FormatUtil.wrapInCurlyBraces(primaryMuscle);
-
-        exercisePage = exerciseRepository.findAllByPrimaryMuscle(primaryMuscleWrapped, pageable);
-
-        List<ExerciseDetailDto> exercises = exercisePage.map(exerciseMapper::toDto).getContent();
+    public ExercisePageDto getFilteredExercises(String prefix, String primaryMuscle, Pageable pageable) {
+        Page<Exercise> exercises = fetchExercisesFromRepository(prefix, primaryMuscle, pageable);
 
         return new ExercisePageDto(
-                exercisePage.getTotalPages(),
-                exercisePage.getTotalElements(),
-                exercises
+                exercises.getTotalPages(),
+                exercises.getTotalElements(),
+                exercises.getContent().stream()
+                        .map(exerciseMapper::toDto)
+                        .collect(Collectors.toList())
         );
     }
 
-    private ExercisePageDto getExercisesByPrimaryMuscleAndPrefix(
-            String prefix, String primaryMuscle, Pageable pageable) {
-        String primaryMusclePrepared = "{" + primaryMuscle + "}";
+    public Page<Exercise> fetchExercisesFromRepository(String prefix, String primaryMuscle, Pageable pageable) {
+        boolean hasPrefix = prefix != null && !prefix.isBlank();
+        boolean hasPrimaryMuscle = primaryMuscle != null && !primaryMuscle.isBlank();
 
-        Page<Exercise> exercisePage = exerciseRepository.findAllByPrimaryMuscleAndPrefix(primaryMusclePrepared, prefix, pageable);
-
-        List<ExerciseDetailDto> exercises = exercisePage.map(exerciseMapper::toDto).getContent();
-
-        return new ExercisePageDto(
-                exercisePage.getTotalPages(),
-                exercisePage.getTotalElements(),
-                exercises
-        );
+        if (hasPrimaryMuscle) {
+            String formattedMuscles = FormatUtil.wrapInCurlyBraces(primaryMuscle);
+            return hasPrefix
+                    ? exerciseRepository.findAllByPrimaryMuscleAndPrefix(formattedMuscles, prefix, pageable)
+                    : exerciseRepository.findAllByPrimaryMuscle(formattedMuscles, pageable);
+        }
+        return hasPrefix
+                ? exerciseRepository.findByPrefixOrContaining(prefix, pageable)
+                : exerciseRepository.findAll(pageable);
     }
 
     public Exercise findExerciseById(UUID id) {
