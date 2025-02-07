@@ -6,6 +6,7 @@ import com.sourcery.gymapp.backend.workout.exception.ExerciseNotFoundException;
 import com.sourcery.gymapp.backend.workout.mapper.ExerciseMapper;
 import com.sourcery.gymapp.backend.workout.model.Exercise;
 import com.sourcery.gymapp.backend.workout.repository.ExerciseRepository;
+import com.sourcery.gymapp.backend.workout.util.FormatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,9 +72,9 @@ public class ExerciseService {
     private ExercisePageDto getExercisesByPrimaryMuscle(String primaryMuscle, Pageable pageable) {
         Page<Exercise> exercisePage;
 
-        String primaryMusclePrepared = "{" + primaryMuscle + "}";
+        String primaryMuscleWrapped = FormatUtil.wrapInCurlyBraces(primaryMuscle);
 
-        exercisePage = exerciseRepository.findAllByPrimaryMuscle(primaryMusclePrepared, pageable);
+        exercisePage = exerciseRepository.findAllByPrimaryMuscle(primaryMuscleWrapped, pageable);
 
         List<ExerciseDetailDto> exercises = exercisePage.map(exerciseMapper::toDto).getContent();
 
