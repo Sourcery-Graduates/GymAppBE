@@ -96,3 +96,9 @@ jwt:
     wiqfan+PYOHXMUoU5LbKHvkmmaS/kWUUauELsI9xKmCuk+tdPJqHiqps/7CGVyu3
     3PGzdbBnQ7Owix8BBbsoeIiJ
     -----END PRIVATE KEY-----
+
+aws:
+  access:
+    key: ${AWS_ACCESS_KEY}
+  secret:
+    key: ${AWS_SECRET_KEY}

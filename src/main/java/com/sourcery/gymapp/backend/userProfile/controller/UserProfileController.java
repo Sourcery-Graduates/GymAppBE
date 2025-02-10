@@ -1,6 +1,7 @@
 package com.sourcery.gymapp.backend.userProfile.controller;
 
 import com.sourcery.gymapp.backend.userProfile.dto.UserProfileDto;
+import com.sourcery.gymapp.backend.userProfile.service.UserPhotoService;
 import com.sourcery.gymapp.backend.userProfile.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final UserPhotoService userPhotoService;
 
     @GetMapping
     public UserProfileDto getUserProfile() {
@@ -25,5 +27,15 @@ public class UserProfileController {
     @DeleteMapping()
     public UserProfileDto deleteUserProfile() {
         return userProfileService.deleteUserProfile();
+    }
+
+    @GetMapping("/photo")
+    public void getUserPhoto() {
+        userPhotoService.getUserPhoto();
+    }
+
+    @PutMapping("/photo")
+    public void uploadUserPhoto() {
+        userPhotoService.uploadUserPhoto();
     }
 }
