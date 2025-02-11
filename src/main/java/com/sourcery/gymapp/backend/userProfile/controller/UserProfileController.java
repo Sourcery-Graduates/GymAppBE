@@ -6,6 +6,9 @@ import com.sourcery.gymapp.backend.userProfile.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user-profile")
@@ -29,13 +32,8 @@ public class UserProfileController {
         return userProfileService.deleteUserProfile();
     }
 
-    @GetMapping("/photo")
-    public void getUserPhoto() {
-        userPhotoService.getUserPhoto();
-    }
-
     @PutMapping("/photo")
-    public void uploadUserPhoto() {
-        userPhotoService.uploadUserPhoto();
+    public void uploadUserPhoto(@RequestParam("file") MultipartFile image) throws IOException {
+        userPhotoService.uploadUserPhoto(image);
     }
 }
