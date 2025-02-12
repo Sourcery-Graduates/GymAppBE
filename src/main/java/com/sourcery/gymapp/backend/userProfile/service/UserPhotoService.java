@@ -1,6 +1,7 @@
 package com.sourcery.gymapp.backend.userProfile.service;
 
 import com.sourcery.gymapp.backend.globalconfig.CurrentUserService;
+import com.sourcery.gymapp.backend.userProfile.exception.UserProfileNotFoundException;
 import com.sourcery.gymapp.backend.userProfile.model.UserProfile;
 import com.sourcery.gymapp.backend.userProfile.repository.UserProfileRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +14,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,10 +59,10 @@ public class UserPhotoService {
     }
 
     private void updateAvatarUrl(UUID userId, String url) {
-        Optional<UserProfile> userProfile = userProfileRepository.findUserProfileByUserId(userId);
-        userProfile.ifPresent(user -> {
-            user.setAvatarUrl(url);
-            userProfileRepository.save(user);
-        });
+        UserProfile userProfile = userProfileRepository.findUserProfileByUserId(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException(userId));
+
+        userProfile.setAvatarUrl(url);
+        userProfileRepository.save(userProfile);
     }
 }
