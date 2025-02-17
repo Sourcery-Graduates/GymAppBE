@@ -34,3 +34,12 @@ spring:
       account-register: "userProfile.create-account"
       retry: "common.RETRY"
       dead-letter: "common.DLT"
+
+aws:
+  s3:
+    access:
+      key: "test-key"
+    secret:
+      key: "test-key"
+    region: "test-region"
+    bucket: "test-bucket"
