@@ -4,8 +4,6 @@ import com.sourcery.gymapp.backend.userProfile.dto.UserProfileDto;
 import com.sourcery.gymapp.backend.userProfile.service.UserPhotoService;
 import com.sourcery.gymapp.backend.userProfile.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,13 +33,9 @@ public class UserProfileController {
     }
 
     @PutMapping("/photo")
-    public ResponseEntity<String> uploadUserPhoto(@RequestParam("file") MultipartFile image) throws IOException {
+    public String uploadUserPhoto(@RequestParam("file") MultipartFile image) {
         userPhotoService.uploadUserPhoto(image);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setCacheControl("no-cache, no-store, must-revalidate");
-        headers.setPragma("no-cache");
-        headers.setExpires(0);
 
-        return ResponseEntity.ok().headers(headers).body("Photo uploaded successfully");
+        return("Photo uploaded successfully");
     }
 }
