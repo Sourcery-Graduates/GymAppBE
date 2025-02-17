@@ -65,4 +65,11 @@ public class UserProfileExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(S3PhotoUploadException.class)
+    public ResponseEntity<ErrorResponse> handleS3PhotoUploadException(S3PhotoUploadException ex) {
+        log.error("S3PhotoUploadException caught: {}", ex.getMessage(), ex);
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), ex.getCode(), null);
+        return new ResponseEntity<>(response, ex.getStatus());
+    }
 }
