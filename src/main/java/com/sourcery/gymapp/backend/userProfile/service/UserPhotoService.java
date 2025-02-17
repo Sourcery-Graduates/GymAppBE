@@ -1,7 +1,6 @@
 package com.sourcery.gymapp.backend.userProfile.service;
 
 import com.sourcery.gymapp.backend.globalconfig.CurrentUserService;
-import com.sourcery.gymapp.backend.userProfile.exception.InvalidAvatarUrlException;
 import com.sourcery.gymapp.backend.userProfile.exception.InvalidImageException;
 import com.sourcery.gymapp.backend.userProfile.exception.S3PhotoUploadException;
 import com.sourcery.gymapp.backend.userProfile.exception.UserProfileNotFoundException;
