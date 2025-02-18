@@ -34,12 +34,14 @@ public class UserPhotoService {
     @Value("${aws.s3.bucket}")
     private String awsBucket;
 
+    private static final int MAX_IMAGE_SIZE = 5242880;
+
     @Transactional
     public void uploadUserPhoto(MultipartFile image) {
         if (image.isEmpty()) {
             throw new InvalidImageException("Image is empty", HttpStatus.BAD_REQUEST);
         }
-        if (image.getSize() > 5242880) {
+        if (image.getSize() > MAX_IMAGE_SIZE) {
             throw new InvalidImageException("Image is too large", HttpStatus.PAYLOAD_TOO_LARGE);
         }
 
@@ -57,18 +59,20 @@ public class UserPhotoService {
         UserProfile userProfile = userProfileRepository.findUserProfileByUserId(currentUserId)
                 .orElseThrow(() -> new UserProfileNotFoundException(currentUserId));
 
-        if (userProfile.getAvatarUrl() != null) {
-            String objectKey = decodeObjectKeyFromAvatarUrl(userProfile.getAvatarUrl());
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(objectKey)
-                    .build();
-
-            s3Client.deleteObject(deleteObjectRequest);
-        }
-        String newObjectKey = currentUserId.toString() + "/user-photo-" + UUID.randomUUID();
-
         try {
+           if (userProfile.getAvatarUrl() != null) {
+                String objectKey = decodeObjectKeyFromAvatarUrl(userProfile.getAvatarUrl());
+                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(objectKey)
+                        .build();
+
+                s3Client.deleteObject(deleteObjectRequest);
+           }
+
+           String avatarIdentifier = "/user-avatar";
+           String newObjectKey = currentUserId.toString() + avatarIdentifier + UUID.randomUUID();
+
            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                    .bucket(bucket)
                    .key(newObjectKey)
@@ -85,8 +89,15 @@ public class UserPhotoService {
         }
     }
 
+    /**
+     * @param avatarUrl - url of the avatar
+     * The object key is the last 84 characters of the url
+     * @return object key
+     */
     private String decodeObjectKeyFromAvatarUrl(String avatarUrl) {
-        return avatarUrl.substring(avatarUrl.length() - 84);
+        int urlSuffixLength = 84;
+
+        return avatarUrl.substring(avatarUrl.length() - urlSuffixLength);
     }
 
     private void updateAvatarUrl(UserProfile userProfile, String url) {
