@@ -10,8 +10,8 @@ spring:
       on-profile: local
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_FILE_SIZE}
 
   datasource:
     url: jdbc:postgresql://localhost:5432/gym_app_db

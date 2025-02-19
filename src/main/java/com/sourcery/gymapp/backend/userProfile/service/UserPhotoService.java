@@ -34,14 +34,15 @@ public class UserPhotoService {
     @Value("${aws.s3.bucket}")
     private String awsBucket;
 
-    private static final int MAX_IMAGE_SIZE = 5242880;
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private int maxFileSize;
 
     @Transactional
     public void uploadUserPhoto(MultipartFile image) {
         if (image.isEmpty()) {
             throw new InvalidImageException("Image is empty", HttpStatus.BAD_REQUEST);
         }
-        if (image.getSize() > MAX_IMAGE_SIZE) {
+        if (image.getSize() > maxFileSize) {
             throw new InvalidImageException("Image is too large", HttpStatus.PAYLOAD_TOO_LARGE);
         }
 
