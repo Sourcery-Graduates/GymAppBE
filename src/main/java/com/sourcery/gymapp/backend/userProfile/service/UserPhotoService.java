@@ -71,8 +71,8 @@ public class UserPhotoService {
                 s3Client.deleteObject(deleteObjectRequest);
            }
 
-           String avatarIdentifier = "/user-avatar";
-           String newObjectKey = currentUserId.toString() + avatarIdentifier + UUID.randomUUID();
+           String avatarIdentifier = "user-avatar";
+           String newObjectKey = currentUserId.toString() + '/' + avatarIdentifier + '-' + UUID.randomUUID();
 
            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                    .bucket(bucket)
@@ -96,7 +96,7 @@ public class UserPhotoService {
      * @return object key
      */
     private String decodeObjectKeyFromAvatarUrl(String avatarUrl) {
-        int urlSuffixLength = 84;
+        int urlSuffixLength = 85;
 
         return avatarUrl.substring(avatarUrl.length() - urlSuffixLength);
     }
