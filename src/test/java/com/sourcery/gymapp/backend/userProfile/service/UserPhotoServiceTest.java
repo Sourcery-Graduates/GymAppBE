@@ -6,6 +6,7 @@ import com.sourcery.gymapp.backend.userProfile.exception.UserProfileNotFoundExce
 import com.sourcery.gymapp.backend.userProfile.factory.UserProfileTestFactory;
 import com.sourcery.gymapp.backend.userProfile.model.UserProfile;
 import com.sourcery.gymapp.backend.userProfile.repository.UserProfileRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,6 +48,11 @@ class UserPhotoServiceTest {
     @DisplayName("Upload User Photo Tests")
     public class UploadUserPhotoTests {
 
+        @BeforeEach
+        void setUp() {
+            ReflectionTestUtils.setField(userPhotoService, "maxFileSize", 1048576); // Set the maxFileSize to 1MB
+        }
+
         @Test
         void uploadUserPhoto_shouldReturnImageIsEmpty() {
             MultipartFile multipartFile = new MockMultipartFile("file", new byte[0]);
@@ -55,7 +62,7 @@ class UserPhotoServiceTest {
 
         @Test
         void uploadUserPhoto_shouldReturnImageIsTooLarge() {
-            MultipartFile multipartFile = new MockMultipartFile("file", new byte[5242881]);
+            MultipartFile multipartFile = new MockMultipartFile("file", new byte[1048577]);
             assertEquals("Image is too large", assertThrows(InvalidImageException.class,
                     () -> userPhotoService.uploadUserPhoto(multipartFile)).getMessage());
         }
