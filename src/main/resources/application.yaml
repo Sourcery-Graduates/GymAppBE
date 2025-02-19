@@ -117,9 +117,3 @@ frontend:
   base_url: "http://localhost:3000"
   registration_verification_path: "/registerVerification?token="
   password_reset_path: "/passwordReset?token="
-
-logging:
-  level:
-    org:
-      springframework:
-        security: TRACE
