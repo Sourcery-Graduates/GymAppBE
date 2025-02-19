@@ -92,7 +92,7 @@ public class UserPhotoService {
 
     /**
      * @param avatarUrl - url of the avatar
-     * The object key is the last 84 characters of the url
+     * The object key is the last 85 characters of the url
      * @return object key
      */
     private String decodeObjectKeyFromAvatarUrl(String avatarUrl) {
