@@ -68,6 +68,7 @@ spring:
     topics:
       account-register: "userProfile.create-account"
       email-send: "email.send-email"
+      email-retry: "email.email-retry"
       retry: "common.RETRY"
       dead-letter: "common.DLT"
 ---
