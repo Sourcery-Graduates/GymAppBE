@@ -39,6 +39,48 @@ public class UserPhotoService {
 
     @Transactional
     public void uploadUserPhoto(MultipartFile image) {
+        validateImage(image);
+
+        UUID currentUserId = currentUserService.getCurrentUserId();
+        String bucket = awsBucket;
+        String region = awsRegion;
+
+        try {
+            UserProfile userProfile = userProfileRepository.findUserProfileByUserId(currentUserId)
+                    .orElseThrow(() -> new UserProfileNotFoundException(currentUserId));
+
+            String oldAvatarUrl = userProfile.getAvatarUrl();
+            String avatarIdentifier = "user-avatar";
+            String newObjectKey = currentUserId.toString() + '/' + avatarIdentifier + '-' + UUID.randomUUID();
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                   .bucket(bucket)
+                   .key(newObjectKey)
+                   .build();
+
+            RequestBody requestBody = RequestBody.fromInputStream(image.getInputStream(), image.getSize());
+
+            s3Client.putObject(putObjectRequest, requestBody);
+
+            String newObjectUrl = "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newObjectKey);
+
+            updateAvatarUrl(userProfile, newObjectUrl);
+
+            if (oldAvatarUrl != null) {
+                String oldObjectKey = decodeObjectKeyFromAvatarUrl(oldAvatarUrl);
+                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(oldObjectKey)
+                        .build();
+
+                s3Client.deleteObject(deleteObjectRequest);
+            }
+        } catch (IOException e) {
+              throw new S3PhotoUploadException();
+        }
+    }
+
+    private void validateImage(MultipartFile image) {
         if (image.isEmpty()) {
             throw new InvalidImageException("Image is empty", HttpStatus.BAD_REQUEST);
         }
@@ -50,43 +92,6 @@ public class UserPhotoService {
 
         if (!allowedContentTypes.contains(image.getContentType())) {
             throw new InvalidImageException("Invalid image type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        }
-
-        UUID currentUserId = currentUserService.getCurrentUserId();
-
-        String bucket = awsBucket;
-        String region = awsRegion;
-
-        UserProfile userProfile = userProfileRepository.findUserProfileByUserId(currentUserId)
-                .orElseThrow(() -> new UserProfileNotFoundException(currentUserId));
-
-        try {
-           if (userProfile.getAvatarUrl() != null) {
-                String objectKey = decodeObjectKeyFromAvatarUrl(userProfile.getAvatarUrl());
-                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(objectKey)
-                        .build();
-
-                s3Client.deleteObject(deleteObjectRequest);
-           }
-
-           String avatarIdentifier = "user-avatar";
-           String newObjectKey = currentUserId.toString() + '/' + avatarIdentifier + '-' + UUID.randomUUID();
-
-           PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                   .bucket(bucket)
-                   .key(newObjectKey)
-                   .build();
-
-           RequestBody requestBody = RequestBody.fromInputStream(image.getInputStream(), image.getSize());
-
-           s3Client.putObject(putObjectRequest, requestBody);
-           String objectUrl = "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newObjectKey);
-
-           updateAvatarUrl(userProfile, objectUrl);
-        } catch (IOException e) {
-              throw new S3PhotoUploadException();
         }
     }
 
