@@ -1,8 +1,4 @@
 spring:
-  cloud:
-    config:
-      enabled: false
-
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:postgresql:14:///test
@@ -46,49 +42,7 @@ spring:
       email-send: "email.send-email"
       retry: "common.RETRY"
       dead-letter: "common.DLT"
----
-jwt:
-  public-key: |
-    -----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArnbVYDXddOT+/iGGafAi
-    sHOCPrRLbKxM44Zn4nwElh6PauTSPOof6bGjfgaJiyb5e/efphm9u9/wziB7aUZe
-    bFFWKMzGcFo+MLWYLmo/6cUMQA5/1eMa7sBi3+ovIeLatKayPirLAv+kInKjXFwD
-    ybWVI1w+SoZtSll3pfK/rvmnAvaoSCipLhI/XIDWzfU3g0elpIUIsgqzmJkMqIeo
-    1L7yhEN+Y8oIYq9fvDB6BFXw2s3hnDguvQTYw5NhGZrM3WL/PsAtSULlP/pfEGZE
-    igKZ9F+qKZ0wrgz2bBJM5GO/9f433eA7kYvzCfMUWjU11EIN8HBfpLz7s1GazMyt
-    BwIDAQAB
-    -----END PUBLIC KEY-----
 
-  private-key: |
-    -----BEGIN PRIVATE KEY-----
-    MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCudtVgNd105P7+
-    IYZp8CKwc4I+tEtsrEzjhmfifASWHo9q5NI86h/psaN+BomLJvl795+mGb273/DO
-    IHtpRl5sUVYozMZwWj4wtZguaj/pxQxADn/V4xruwGLf6i8h4tq0prI+KssC/6Qi
-    cqNcXAPJtZUjXD5Khm1KWXel8r+u+acC9qhIKKkuEj9cgNbN9TeDR6WkhQiyCrOY
-    mQyoh6jUvvKEQ35jyghir1+8MHoEVfDazeGcOC69BNjDk2EZmszdYv8+wC1JQuU/
-    +l8QZkSKApn0X6opnTCuDPZsEkzkY7/1/jfd4DuRi/MJ8xRaNTXUQg3wcF+kvPuz
-    UZrMzK0HAgMBAAECggEBAKthquwvHdPl3CPS1RKeRcVmQszMGcewXnunncdbornB
-    XYtZKrmSGDVePkffrh/W8n932gm2Aa9cJlami/T3nmvzXpsHxeu6ipsY2FzIHO7M
-    leMbGzMGPH/K15Y0m4ZDLisGEdSF/xV8AUWhrZ5d+Y6dZNruk3ZsJVJDHwkStH/x
-    uTLZcSpz0paOrcRQyRsuA7/iNLg+Z15uad1S0CtvDt/DaNUbipwYrC25g1NcKBAG
-    QodtF2KP5XfZUYCLsFz+WR75E+I7+uczaeRbfLgcvAa2fIlbSaazVXFo2ikJump9
-    tDp9nR7Fs7ElMlEbkfoX9vm7kU/UqxjC0oCUoDsVV+ECgYEA3CiDjRhvBUf/2EgW
-    AIzVB+cpWc8Objj08n5r1iaZQBV6gAaV3CW/X60Rcq8hjzx/Bj7RY4X+ALURNqPR
-    31sajY4gHWbxmSA5lbBKR8b82u2RlxcPaStmYOzfYvvkR3CMrh0yLGMjdbdmAQu/
-    8TLvb97PDXNfDlhMjD6NQVh2IXECgYEAyt3wO6+3G2jTE4zo2l2+Z8H7d9LTj/3h
-    JAR9hfrcu4ysgS+TRWCzA1C3NUONunxjl9lCzg39rIr7CTrh6k5j2NbSWmhkKxkF
-    ncVjaakacI1dW8tkbzEFc4aajWP048p8jQZO5Dv7Uxej+R4YZz5YGrzp8gM+wbwr
-    fJOp2+tEefcCgYEAx75qPGVitOPyGASvEai0zwrH1ZeqfA5pDmns5Mr4V9Ak6GsR
-    JD+LNf8LyYVjaVV12fC8gRNctL+S8oQHMiKyIKRGNubjZA58sHbVrfG4D9ljMjXV
-    4ZFivaWrt17aaoaO3JnYn7UCwxa2EVTbvLZ9zn3UVVvLbnRmXweRmSvtYcECgYEA
-    uN+AqiP7rlLc6JglK7r6Zfv1esD6Y+JtZjFhYtO2jIQqQKBmiXcSLBdGnpetdSEe
-    cadgpf9CChetpj+u2aQOgfFjSViQ0GXBJIJZklS075UkWx8DrAD0gs9L0UYiSeSh
-    lLMG+h9fbd3BZKj0fEHocJVwbUhfzJX621CGHxBMGwkCgYAzt1T45SyanB5lR6ZY
-    8tKNwdVKzhlBdbpUzrFklGv5zxWvL3Lsgushr3gMGlOzQeEARpkvn51Xs7qJs2WA
-    xMVofC3kSrZ0g5889v5fLORTdR5TOHkzU/BX9SK3fnvdfTHZeGqS3oibyyVJZugT
-    zpjwqA+k5QjeRcEG2s7WQhFryA==
-    -----END PRIVATE KEY-----
----
 aws:
   s3:
     access:

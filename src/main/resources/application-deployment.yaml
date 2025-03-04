@@ -1,7 +1,5 @@
 spring:
   application:
     name: gymapp
-  profiles:
-    active: deployment
   config:
     import: configserver:http://localhost:8888

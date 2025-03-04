@@ -28,6 +28,12 @@ ext {
 	set('springCloudVersion', "2024.0.0")
 }
 
+configurations {
+	testImplementation {
+		exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-config'
+	}
+}
+
 dependencies {
 	implementation 'org.springframework:spring-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -81,6 +87,7 @@ tasks.register('integrationTest', Test) {
 	group = 'verification'
 	shouldRunAfter test
 	systemProperty 'spring.profiles.active', 'test'
+	exclude()
 }
 
 tasks.named('check') {
