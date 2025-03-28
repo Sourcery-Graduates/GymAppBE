@@ -78,6 +78,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     topics:
+      user-reminder: "authentication.user-reminder"
       account-register: "userProfile.create-account"
       likes-events: "workout.like-events"
       likes-notifications: "userProfile.notifications-likes-dislikes"
@@ -90,8 +91,19 @@ spring:
       properties:
         default.key.serde: org.apache.kafka.common.serialization.Serdes$UUIDSerde
         default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-
+  batch:
+    job:
+      enabled: true
+      name: remindUserJob
 frontend:
   base_url: "http://localhost:3000"
   registration_verification_path: "/registerVerification?token="
   password_reset_path: "/passwordReset?token="
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        batch: DEBUG
+#        jdbc:
+#          core: DEBUG
