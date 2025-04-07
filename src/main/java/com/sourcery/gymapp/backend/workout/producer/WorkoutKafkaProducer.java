@@ -3,6 +3,7 @@ package com.sourcery.gymapp.backend.workout.producer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sourcery.gymapp.backend.events.RoutineLikeEvent;
+import com.sourcery.gymapp.backend.events.LastUserWorkoutEvent;
 import com.sourcery.gymapp.backend.workout.exception.WorkoutRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,9 @@ public class WorkoutKafkaProducer {
 
     @Value("${spring.kafka.topics.likes-events}")
     private String likesEventsTopicName;
+
+    @Value("${spring.kafka.topics.last-user-workout}")
+    private String lastUserWorkoutTopicName;
 
     private KafkaTemplate<UUID, String> kafkaTemplate;
     private ObjectMapper objectMapper;
@@ -46,6 +50,28 @@ public class WorkoutKafkaProducer {
                 log.error("Error sending routine like event: {}", error.getMessage(), error);
             } else {
                 log.info("Successfully sent routine like event: \n key: {}\n value: {}", key, finalValue);
+            }
+        });
+    }
+
+    public CompletableFuture<SendResult<UUID, String>> sendLastUserWorkoutEvent(LastUserWorkoutEvent event) {
+        UUID key = event.userId();
+
+        String value;
+        try {
+            value = objectMapper.writeValueAsString(event);
+        } catch (JsonProcessingException e) {
+            throw new WorkoutRuntimeException("Couldn't convert to JSON at Kafka Producer" + e.getMessage());
+        }
+
+        var future = kafkaTemplate.send(lastUserWorkoutTopicName, key, value);
+
+        String finalValue = value;
+        return future.whenComplete((result, error) -> {
+            if (error != null) {
+                log.error("Error sending last user workout event: {}", error.getMessage(), error);
+            } else {
+                log.info("Successfully sent last user workout event: \n key: {}\n value: {}", key, finalValue);
             }
         });
     }
