@@ -94,8 +94,7 @@ spring:
         default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
   batch:
     job:
-      enabled: true
-      name: remindUserJob
+      enabled: false
     jdbc:
       initialize-schema: always
 frontend:

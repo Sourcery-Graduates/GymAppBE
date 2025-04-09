@@ -28,15 +28,14 @@ public class JobConfig {
     private final WorkoutKafkaProducer workoutKafkaProducer;
     private final LastUserWorkoutProcessor lastUserWorkoutProcessor;
 
-    @Bean
-    public Job remindUserJob() {
-        return new JobBuilder("remindUserJob", jobRepository)
-                .start(firstStep(dataSourceTransactionManager))
+    @Bean(name = "lastWorkoutReminderJob")
+    public Job lastWorkoutReminderJob() {
+        return new JobBuilder("lastWorkoutReminderJob", jobRepository)
+                .start(lastWorkoutReminderChunkStep(dataSourceTransactionManager))
                 .build();
     }
 
-
-    public Step firstStep(DataSourceTransactionManager transactionManager) {
+    public Step lastWorkoutReminderChunkStep(DataSourceTransactionManager transactionManager) {
         return new StepBuilder("firstStep", jobRepository)
                 .<LastUserWorkoutDto, LastUserWorkoutEvent>chunk(3, transactionManager)
                 .reader(jdbcCursorItemReader())
