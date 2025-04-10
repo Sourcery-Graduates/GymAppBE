@@ -13,6 +13,10 @@ public class LastWorkoutReminderProcessor implements ItemProcessor<LastUserWorko
     public LastUserWorkoutEvent process(LastUserWorkoutDto item) throws Exception {
         long daysSinceLastWorkout = DateUtil.calculateDaysSince(item.getDateTime());
 
+        if (daysSinceLastWorkout < 14) {
+            return null;
+        }
+
         return new LastUserWorkoutEvent(
                 item.getUserId(),
                 item.getDateTime(),

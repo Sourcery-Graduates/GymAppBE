@@ -24,7 +24,7 @@ public class WorkoutJobLauncher {
         this.lastWorkoutRemindUserJob = lastWorkoutRemindUserJob;
     }
 
-    @Scheduled(cron = "0 0 18 ? * SUN")
+    @Scheduled(cron = "0 00 18 ? * SUN")
     public void launchLastWorkoutRemindUserJobScheduled() {
         JobParameters jobParameters = getLastWorkoutRemindJobParameters();
 

@@ -32,7 +32,7 @@ public class JobConfig {
     }
 
     public Step lastWorkoutReminderChunkStep(DataSourceTransactionManager transactionManager) {
-        return new StepBuilder("firstStep", jobRepository)
+        return new StepBuilder("lastWorkoutReminderChunkStep", jobRepository)
                 .<LastUserWorkoutDto, LastUserWorkoutEvent>chunk(3, transactionManager)
                 .reader(workoutReader.lastWorkoutReminderReader())
                 .processor(lastWorkoutReminderProcessor)
