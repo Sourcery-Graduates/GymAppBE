@@ -49,6 +49,7 @@ dependencies {
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
 	implementation 'org.springframework.boot:spring-boot-starter-batch:3.4.3'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'

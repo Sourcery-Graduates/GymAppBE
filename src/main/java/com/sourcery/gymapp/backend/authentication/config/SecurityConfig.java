@@ -5,6 +5,7 @@ import com.sourcery.gymapp.backend.authentication.config.security.client_auth.Pu
 import com.sourcery.gymapp.backend.authentication.config.security.login.LoginFailureHandler;
 import com.sourcery.gymapp.backend.authentication.config.security.token.CookieOAuth2TokenResponseHandler;
 import com.sourcery.gymapp.backend.authentication.config.security.token.RefreshTokenCookieAuthenticationConverter;
+import com.sourcery.gymapp.backend.authentication.service.CustomOidcUserService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.List;
@@ -120,10 +121,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/api/auth/**",
-                                "/actuator/health"
+                                "/api/auth/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -133,14 +131,20 @@ public class SecurityConfig {
 
     @Bean
     @Order(3)
-    public SecurityFilterChain defaultSecurityChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain defaultSecurityChain(HttpSecurity httpSecurity,
+                                                    CustomOidcUserService oidcUserService) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/logout"))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/authentication/main.css", "/login", "/error",
                                 "/authentication/scripts.js",
-                                "/oauth2/logout").permitAll()
+                                "/oauth2/logout",
+                                "/oauth2/authorization/**",
+                                "/login/oauth2/code/**,",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -149,6 +153,12 @@ public class SecurityConfig {
                         .failureUrl("/login?error")
                         .failureHandler(new LoginFailureHandler())
                         .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(oidcUserService)
+                        )
                 )
                 .logout(logout -> logout
                         .logoutUrl("/oauth2/logout")
