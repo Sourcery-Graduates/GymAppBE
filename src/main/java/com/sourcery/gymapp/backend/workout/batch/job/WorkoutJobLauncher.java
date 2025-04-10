@@ -16,7 +16,6 @@ import java.util.UUID;
 @Slf4j
 public class WorkoutJobLauncher {
     private final JobLauncher jobLauncher;
-
     private final Job lastWorkoutRemindUserJob;
 
     public WorkoutJobLauncher(JobLauncher jobLauncher,

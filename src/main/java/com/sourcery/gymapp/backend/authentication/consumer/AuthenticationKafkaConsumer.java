@@ -1,7 +1,7 @@
 package com.sourcery.gymapp.backend.authentication.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sourcery.gymapp.backend.authentication.service.LastUserWorkoutService;
+import com.sourcery.gymapp.backend.authentication.service.LastWorkoutReminderService;
 import com.sourcery.gymapp.backend.events.LastUserWorkoutEvent;
 import com.sourcery.gymapp.backend.globalconfig.KafkaProcessingContext;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthenticationKafkaConsumer {
     private final ObjectMapper objectMapper;
-    private final LastUserWorkoutService service;
+    private final LastWorkoutReminderService service;
 
     @KafkaListener(topics = "${spring.kafka.topics.last-user-workout}", groupId = "authentication-listener-group")
     public void onLastUserWorkoutMessage(ConsumerRecord<UUID, String> record) {

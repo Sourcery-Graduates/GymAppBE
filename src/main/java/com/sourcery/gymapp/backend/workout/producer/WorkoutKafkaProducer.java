@@ -54,7 +54,7 @@ public class WorkoutKafkaProducer {
         });
     }
 
-    public CompletableFuture<SendResult<UUID, String>> sendLastUserWorkoutEvent(LastUserWorkoutEvent event) {
+    public CompletableFuture<SendResult<UUID, String>> sendLastWorkoutReminderEvent(LastUserWorkoutEvent event) {
         UUID key = event.userId();
 
         String value;

@@ -7,7 +7,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LastUserWorkoutProcessor implements ItemProcessor<LastUserWorkoutDto, LastUserWorkoutEvent> {
+public class LastWorkoutReminderProcessor implements ItemProcessor<LastUserWorkoutDto, LastUserWorkoutEvent> {
 
     @Override
     public LastUserWorkoutEvent process(LastUserWorkoutDto item) throws Exception {

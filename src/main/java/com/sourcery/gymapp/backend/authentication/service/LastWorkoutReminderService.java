@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LastUserWorkoutService {
+public class LastWorkoutReminderService {
     private final UserRepository userRepository;
     private final AuthKafkaProducer authKafkaProducer;
     private final EmailTemplateMapper emailTemplateMapper;

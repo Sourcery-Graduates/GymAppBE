@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.UUID;
 
-public class LastUserWorkoutDtoRowMapper implements RowMapper<LastUserWorkoutDto> {
+public class LastWorkoutReminderDtoRowMapper implements RowMapper<LastUserWorkoutDto> {
     @Override
     public LastUserWorkoutDto mapRow(ResultSet rs, int rowNum) throws SQLException {
         LastUserWorkoutDto dto = new LastUserWorkoutDto();
