@@ -18,8 +18,8 @@ public class WorkoutReader {
         reader.setDataSource(dataSource);
         reader.setSql(
                 "SELECT DISTINCT ON (user_id) user_id as userId, date as dateTime " +
-                        "FROM workout_data.workout\n" +
-                        "ORDER BY user_id, date DESC"
+                "FROM workout_data.workout\n" +
+                "ORDER BY user_id, date DESC"
         );
         reader.setRowMapper(new LastWorkoutReminderDtoRowMapper());
         return reader;
