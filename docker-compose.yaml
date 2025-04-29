@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:14-alpine
-    container_name: postgres
+    container_name: postgres-modulith
     environment:
       POSTGRES_DB: gym_app_db
       POSTGRES_USER: gym_app_user
@@ -18,7 +18,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin
+    container_name: pgadmin-modulith
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin_pass
@@ -33,7 +33,7 @@ services:
     image: confluentinc/cp-zookeeper:7.3.2
     platform: linux/amd64
     hostname: zoo1
-    container_name: zoo1
+    container_name: zoo1-modulith
     ports:
       - "2181:2181"
     environment:
@@ -48,7 +48,7 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     platform: linux/amd64
     hostname: kafka1
-    container_name: kafka1
+    container_name: kafka1-modulith
     ports:
       - "9092:9092"
       - "29092:29092"
