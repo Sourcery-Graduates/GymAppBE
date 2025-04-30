@@ -41,7 +41,7 @@ public class WorkoutJobLauncher {
         try {
             jobLauncher.run(lastWorkoutRemindUserJob, jobParameters);
         } catch (Exception e) {
-            log.error("Failed to manual run lastWorkoutReminderJob", e);
+            log.error("Failed to manually run lastWorkoutReminderJob", e);
         }
     }
 
