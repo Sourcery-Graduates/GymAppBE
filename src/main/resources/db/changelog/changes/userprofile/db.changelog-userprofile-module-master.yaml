@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       file: ./v2.0-routine-like-notification-changelog.sql
       relativeToChangelogFile: true
+
+  - include:
+      file: ./v3.0-add-test-user-profile.sql
+      relativeToChangelogFile: true
