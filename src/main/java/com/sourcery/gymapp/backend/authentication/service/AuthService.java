@@ -153,4 +153,12 @@ public class AuthService {
 
         return ResponseEntity.ok("Password has been changed!");
     }
+
+    @Transactional
+    public ResponseEntity<String> deleteUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Can't find user by email " + email));
+        userRepository.delete(user);
+
+        return ResponseEntity.ok("User has been deleted");
+    }
 }

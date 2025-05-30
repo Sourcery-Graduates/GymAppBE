@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,6 +68,16 @@ public class AuthenticationExceptionHandler {
                 ErrorCode.OAUTH2_ERROR,
                 List.of(new FieldResponse("OAuth2", error.getErrorCode()))
         );
+
+        return new ResponseEntity<>(response, status);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        log.error("UsernameNotFoundException caught: {}", ex.getMessage(), ex);
+
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), ErrorCode.EMAIL_NOT_FOUND, null);
 
         return new ResponseEntity<>(response, status);
     }
