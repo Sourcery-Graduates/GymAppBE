@@ -71,6 +71,7 @@ services:
         kafka.request.logger=WARN,
         kafka.coordinator.group=WARN,
         kafka.log.LogCleaner=WARN
+    restart: unless-stopped
     depends_on:
       - zoo1
     networks:
