@@ -159,6 +159,8 @@ public class AuthService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Can't find user by email " + email));
         userRepository.delete(user);
 
-        return ResponseEntity.ok("User has been deleted");
+        kafkaEventsProducer.sendDeleteUserProfileEvent(user.getId());
+
+        return ResponseEntity.ok("User with his profile has been deleted");
     }
 }
