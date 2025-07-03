@@ -35,9 +35,4 @@ public class AuthController {
     public ResponseEntity<String> passwordChange(@Valid @RequestBody PasswordChangeDto passwordChangeDto) {
         return authService.passwordChange(passwordChangeDto.password(), passwordChangeDto.token());
     }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestParam("email") String email) {
-        return authService.deleteUser(email);
-    }
 }
