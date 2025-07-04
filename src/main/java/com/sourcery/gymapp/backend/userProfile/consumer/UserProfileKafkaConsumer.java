@@ -51,4 +51,20 @@ public class UserProfileKafkaConsumer {
             KafkaProcessingContext.disableKafkaProcessing();
         }
     }
+
+    @KafkaListener(topics = "${spring.kafka.topics.delete-userprofile}", groupId = "user-profile-listener-group")
+    public void onDeleteUserProfile(ConsumerRecord<UUID, String> record) {
+        try {
+            KafkaProcessingContext.enableKafkaProcessing();
+
+            var data = objectMapper.readValue(record.value(), UUID.class);
+
+            userProfileService.deleteUserProfileByUserId(data);
+            log.info("User Profile deletion processed");
+        } catch (Exception e) {
+            log.error("Error processing user profile delete event: {}", e.getMessage(), e);
+        } finally {
+            KafkaProcessingContext.disableKafkaProcessing();
+        }
+    }
 }

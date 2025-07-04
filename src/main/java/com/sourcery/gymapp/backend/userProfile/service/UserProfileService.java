@@ -53,6 +53,11 @@ public class UserProfileService {
     }
 
     @Transactional
+    public void deleteUserProfileByUserId(UUID userId) {
+        userProfileRepository.deleteByUserId(userId);
+    }
+
+    @Transactional
     public void createUserProfileAfterRegistration(RegistrationEvent event) {
         boolean profileExists = userProfileRepository.existsById(event.userId());
         if (profileExists) {

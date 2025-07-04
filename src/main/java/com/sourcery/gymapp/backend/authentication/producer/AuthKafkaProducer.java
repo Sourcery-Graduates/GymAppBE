@@ -23,6 +23,9 @@ public class AuthKafkaProducer {
     @Value("${spring.kafka.topics.email-send}")
     private String emailTopicName;
 
+    @Value("${spring.kafka.topics.delete-userprofile}")
+    private String deleteUserProfileTopicName;
+
     private final KafkaTemplate<UUID, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
@@ -69,6 +72,25 @@ public class AuthKafkaProducer {
                 log.error("Error sending library event: {}", error.getMessage(), error);
             } else {
                 log.info("Successfully sent registration email event: \n key: {}\n value: {}", key, finalValue);
+            }
+        });
+    }
+
+    public CompletableFuture<SendResult<UUID, String>> sendDeleteUserProfileEvent(UUID userId) {
+        String value;
+        try {
+            value = objectMapper.writeValueAsString(userId);
+        } catch (JsonProcessingException e) {
+            throw new AuthenticationRuntimeException("Couldn't convert to JSON at Kafka Producer: " + e.getMessage());
+        }
+
+        var future = kafkaTemplate.send(deleteUserProfileTopicName, userId, value);
+
+        return future.whenComplete((result, error) -> {
+            if (error != null) {
+                log.error("Error sending delete user profile event: {}", error.getMessage(), error);
+            } else {
+                log.info("Successfully sent delete user profile event: \n key: {}\n value: {}", userId, value);
             }
         });
     }

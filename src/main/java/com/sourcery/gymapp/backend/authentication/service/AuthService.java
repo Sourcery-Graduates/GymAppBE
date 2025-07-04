@@ -153,4 +153,14 @@ public class AuthService {
 
         return ResponseEntity.ok("Password has been changed!");
     }
+
+    @Transactional
+    public ResponseEntity<String> deleteUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Can't find user by email " + email));
+        userRepository.delete(user);
+
+        kafkaEventsProducer.sendDeleteUserProfileEvent(user.getId());
+
+        return ResponseEntity.ok("User with his profile has been deleted");
+    }
 }

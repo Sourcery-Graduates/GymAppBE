@@ -83,6 +83,7 @@ spring:
       likes-notifications: "userProfile.notifications-likes-dislikes"
       email-send: "email.send-email"
       email-retry: "email.email-retry"
+      delete-userprofile: "userProfile.delete-userprofile"
       retry: "common.RETRY"
       dead-letter: "common.DLT"
     streams:

@@ -35,5 +35,4 @@ public class AuthController {
     public ResponseEntity<String> passwordChange(@Valid @RequestBody PasswordChangeDto passwordChangeDto) {
         return authService.passwordChange(passwordChangeDto.password(), passwordChangeDto.token());
     }
-
 }
